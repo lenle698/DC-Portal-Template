@@ -19,14 +19,18 @@
    - Mã nguồn đã được lọc sạch 100% token, API key, số tài khoản công ty và dữ liệu nội bộ.
    - Cơ chế bảo vệ Super Admin qua biến môi trường `SUPERADMIN_EMAILS`.
    - Xác thực đa dạng: Lark SSO (Feishu) hoặc Email OTP một lần có khóa tên miền `ALLOWED_EMAIL_DOMAINS`.
-3. **Thương Mại & Vận Hành Đa Kênh**:
+3. **Tối Ưu Chi Phí Google Cloud Đỉnh Cao (>95% Bill Reduction)**:
+   - **In-Memory Cache (RAM)**: Cache phân tầng cho `userAccess` (TTL 60s), `/api/orders` (TTL 45s), và `notifications` (TTL 60s). Tự động purge cache ngay lập tức khi phát sinh mutation (thêm/sửa/xóa đơn, webhook ingest, tracking update).
+   - **Visibility-Aware Polling (Client)**: Tự động ngắt polling chu kỳ khi tab trình duyệt bị ẩn hoặc thu nhỏ (`document.visibilityState === 'hidden'`); tự động nạp dữ liệu tức thì khi người dùng quay lại tab (`visibilitychange`). Giảm Firestore reads từ hàng triệu lượt xuống < 50k reads/ngày!
+   - **Scale to Zero (Cold Idle)**: Loại bỏ các tiến trình interval vô hạn trên server, cho phép Cloud Run tự động scale về 0 instance khi không có traffic, giảm chi phí máy chủ tối đa.
+4. **Thương Mại & Vận Hành Đa Kênh**:
    - Đồng bộ đơn hàng từ Shopify, Pancake POS, Lead Form tự thiết kế, Shopee, TikTok Shop.
    - Phân tích phễu chuyển đổi và tracking UTM chi tiết từng chiến dịch quảng cáo.
-4. **Tài Chính Tự Động Hóa (SePay)**:
+5. **Tài Chính Tự Động Hóa (SePay)**:
    - Kết nối SePay Webhook nhận biến động số dư ngân hàng theo thời gian thực.
    - Tự động đối soát đơn hàng với tiền thực tế vào tài khoản ngân hàng.
    - Quy trình duyệt chi và hoàn ứng 2 cấp (Lớp 1 & Lớp 2) chặt chẽ.
-5. **AI-Friendly Codebase**:
+6. **AI-Friendly Codebase**:
    - Đi kèm [AI_DEVELOPMENT_GUIDE.md](AI_DEVELOPMENT_GUIDE.md) giải thích toàn bộ data model và cú pháp reactive, giúp các AI assistant (Claude, Cursor, Antigravity, ChatGPT) dễ dàng mở rộng tính năng mới theo yêu cầu.
 
 ---

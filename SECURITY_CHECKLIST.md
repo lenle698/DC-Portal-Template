@@ -1,6 +1,6 @@
 # 🛡️ Pre-Flight Security Checklist & Hardening Guide
 
-Trước khi deploy ứng dụng lên production (ví dụ: Google Cloud Run `https://dcvietnam-portal-759227707356.asia-southeast1.run.app` hoặc domain tùy chỉnh), hãy kiểm tra toàn diện danh sách sau để đảm bảo bảo mật dữ liệu và an toàn hệ thống.
+Trước khi deploy ứng dụng lên production (ví dụ: Google Cloud Run `https://portal-xxxx-uc.a.run.app` hoặc domain tùy chỉnh), hãy kiểm tra toàn diện danh sách sau để đảm bảo bảo mật dữ liệu và an toàn hệ thống.
 
 ---
 

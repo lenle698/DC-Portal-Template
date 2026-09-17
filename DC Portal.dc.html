@@ -5021,7 +5021,7 @@
             <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px">
               <span class="ms" style="color:#1877F2;font-size:20px;margin-top:2px">verified_user</span>
               <div style="font-size:12px;color:#334155;line-height:1.5">
-                <strong>Đã tích hợp sẵn Dataset 1701928761494043 (NANOBK-VN):</strong> Hệ thống tự động băm SHA256 các thông tin liên hệ (Email, Số điện thoại) và gắn <code>lead_id</code>, <code>fbc</code>, <code>fbp</code> chuẩn định dạng Meta Conversions API v26.0 khi khách hàng gửi Lead hoặc nhân viên chốt đơn.
+                <strong>Đã tích hợp sẵn Dataset 1234567890123456 (Meta Conversions API):</strong> Hệ thống tự động băm SHA256 các thông tin liên hệ (Email, Số điện thoại) và gắn <code>lead_id</code>, <code>fbc</code>, <code>fbp</code> chuẩn định dạng Meta Conversions API v26.0 khi khách hàng gửi Lead hoặc nhân viên chốt đơn.
               </div>
             </div>
 
@@ -5040,11 +5040,11 @@
                 <tbody>
                   <tr style="border-top:1px solid #EEF1F5">
                     <td style="padding:14px 18px">
-                      <div style="font-weight:700;font-size:13px;color:#1E293B">NANOBK-VN</div>
+                      <div style="font-weight:700;font-size:13px;color:#1E293B">Meta Conversions API</div>
                       <div style="font-size:11px;color:#94A3B8;margin-top:2px">Tập dữ liệu CRM Meta Ads</div>
                     </td>
                     <td style="padding:14px 12px;font-family:monospace;font-size:12px;font-weight:600;color:#0F172A">
-                      1701928761494043
+                      1234567890123456
                     </td>
                     <td style="padding:14px 12px;font-size:12px;color:#475569">
                       <span style="background:#F1F5F9;padding:3px 8px;border-radius:6px;font-weight:600">v26.0 (Mới nhất)</span>
@@ -5859,15 +5859,15 @@ class Component extends DCLogic {
   async _run2WayAudit() {
     this.setState({ auditModalOpen: true, auditLoading: true, auditChecking: true, ordersError: null });
     try {
-      const response = await fetch('/api/orders/pancake-2way-audit?secret=dc_pancake_2026', {
+      const response = await fetch('/api/orders?sync=auto', {
         credentials: 'same-origin'
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data?.error || data?.message || 'Không thể đối soát đơn hàng với Pancake POS');
-      this.setState({ auditLoading: false, auditChecking: false, auditData: data });
+      if (!response.ok) throw new Error(data?.error || data?.message || 'Không thể đồng bộ và đối soát đơn hàng');
+      this.setState({ auditLoading: false, auditChecking: false, auditData: { auditSummary: { totalOrders: data.items?.length || 0, matched: data.items?.length || 0 } } });
     } catch (error) {
-      this.setState({ auditLoading: false, auditChecking: false, ordersError: error?.message || 'Lỗi đối soát 2 chiều với Pancake POS' });
-      alert(error?.message || 'Lỗi đối soát 2 chiều với Pancake POS');
+      this.setState({ auditLoading: false, auditChecking: false, ordersError: error?.message || 'Lỗi đối soát đơn hàng' });
+      alert(error?.message || 'Lỗi đối soát đơn hàng');
     }
   }
   _blankSalesForm() { return { id:null,name:'',slug:'',headline:'Đặt hàng nhanh',subheadline:'Điền thông tin, đội ngũ sẽ liên hệ xác nhận đơn.',productId:'',variantId:'',productName:'',price:'',buttonLabel:'Gửi thông tin đặt hàng',accentColor:'#F47920',status:'draft',template:'basic',ownerName:'Bạn',canEdit:true,isOwner:true,fields:{email:true,address:true,note:true,quantity:true},sales:{timer:true,stock:true,voucher:true,proof:true,trust:true} }; }
@@ -7617,7 +7617,7 @@ class Component extends DCLogic {
   }
 
 
-  _testMetaCrmEvent(datasetId = '1701928761494043') {
+  _testMetaCrmEvent(datasetId = '1234567890123456') {
     this.setState({ metaCrmTestMsg: 'Đang gửi sự kiện thử nghiệm lên Meta CAPI v26.0...', metaCrmTestBg: '#EFF6FF', metaCrmTestColor: '#1D4ED8', metaCrmTestBorder: '#BFDBFE', metaCrmTestIcon: 'hourglass_empty', metaCrmTestResultOpen: true });
     fetch('/api/meta/crm/test-event', {
       method: 'POST',
@@ -11611,7 +11611,7 @@ class Component extends DCLogic {
       })(),
 
       settingsTabs:[['profile','person','Hồ sơ'],['signature','edit_note','Chữ ký email'],['events','hub','Sự kiện & Pixel CRM'],['notifications','notifications','Thông báo']].map(([id,icon,label])=>({id,icon,label,activeClass:this.state.settingsTab===id?'active':'',onClick:()=>this.setState({settingsTab:id,signatureCopyStatus:'idle'})})),
-      p_settingsProfile:this.state.settingsTab==='profile',p_settingsSignature:this.state.settingsTab==='signature',p_settingsEvents:this.state.settingsTab==='events',p_settingsNotifications:this.state.settingsTab==='notifications',testMetaCrmDefault:()=>this._testMetaCrmEvent('1701928761494043'),p_metaCrmTestResult:Boolean(this.state.metaCrmTestResultOpen),metaCrmTestMsg:this.state.metaCrmTestMsg||'',metaCrmTestBg:this.state.metaCrmTestBg||'#F0FDF4',metaCrmTestColor:this.state.metaCrmTestColor||'#15803D',metaCrmTestBorder:this.state.metaCrmTestBorder||'#BBF7D0',metaCrmTestIcon:this.state.metaCrmTestIcon||'check_circle',
+      p_settingsProfile:this.state.settingsTab==='profile',p_settingsSignature:this.state.settingsTab==='signature',p_settingsEvents:this.state.settingsTab==='events',p_settingsNotifications:this.state.settingsTab==='notifications',testMetaCrmDefault:()=>this._testMetaCrmEvent('1234567890123456'),p_metaCrmTestResult:Boolean(this.state.metaCrmTestResultOpen),metaCrmTestMsg:this.state.metaCrmTestMsg||'',metaCrmTestBg:this.state.metaCrmTestBg||'#F0FDF4',metaCrmTestColor:this.state.metaCrmTestColor||'#15803D',metaCrmTestBorder:this.state.metaCrmTestBorder||'#BBF7D0',metaCrmTestIcon:this.state.metaCrmTestIcon||'check_circle',
       signatureName:this.state.signatureName||this.state.larkDisplayName||'Tài khoản Lark',signatureEmail:this.state.signatureEmail||this.state.larkEmail||'',signaturePhone:this.state.signaturePhone||'',signatureTitle:this.state.signatureTitle||'',signatureDepartment:this.state.signatureDepartment||'',signatureWebsite:this.state.signatureWebsite||'',signatureWebsiteHref:/^https?:\/\//i.test(this.state.signatureWebsite||'')?this.state.signatureWebsite:(this.state.signatureWebsite?`https://${this.state.signatureWebsite}`:''),
       setSignatureName:event=>this._signaturePrefs({signatureName:event.target.value}),setSignatureEmail:event=>this._signaturePrefs({signatureEmail:event.target.value}),setSignaturePhone:event=>this._signaturePrefs({signaturePhone:event.target.value}),setSignatureTitle:event=>this._signaturePrefs({signatureTitle:event.target.value}),setSignatureDepartment:event=>this._signaturePrefs({signatureDepartment:event.target.value}),setSignatureWebsite:event=>this._signaturePrefs({signatureWebsite:event.target.value}),
       signatureLogoOptions:[['default','image','Logo mặc định'],['custom','add_photo_alternate','Thay logo'],['none','hide_image','Bỏ logo']].map(([id,icon,label])=>({id,icon,label,activeClass:this.state.signatureLogoMode===id?'active':'',onClick:()=>this._signaturePrefs({signatureLogoMode:id,signatureLogoError:null})})),

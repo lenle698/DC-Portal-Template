@@ -872,7 +872,7 @@
       <label style="font-size:10px;font-weight:800;letter-spacing:.55px;color:#71717A">PIXEL GẮN VÀO FORM
         <select value="{{ pixelId }}" onChange="{{ setPixelId }}" style="display:block;width:100%;height:40px;margin-top:6px;border:1px solid #D4D4D8;border-radius:7px;background:#fff;padding:0 9px;font-size:11px">
           <option value="">Không gắn Pixel</option>
-          <option value="1701928761494043">NANOBK-VN · 1701928761494043</option>
+          <option value="1234567890123456">Pixel Mẫu · 1234567890123456</option>
         </select>
       </label>
       <sc-if value="{{ pixelSelected }}" hint-placeholder-val="{{ false }}">
@@ -986,7 +986,7 @@ const TPLS = [
 ];
 const PLAIN_TPLS=['plain','plain_compact'];
 const isPlainTpl=id=>PLAIN_TPLS.includes(id);
-const PIXELS=[{id:'1701928761494043',name:'NANOBK-VN',owner:'DC VIỆT NAM'}];
+const PIXELS=[{id:'1234567890123456',name:'Pixel Mẫu',owner:'Organization'}];
 const PIXEL_EVENTS=[{id:'Purchase',label:'Purchase · Mua hàng'},{id:'Lead',label:'Lead · Khách hàng tiềm năng'},{id:'CompleteRegistration',label:'CompleteRegistration · Hoàn tất đăng ký'},{id:'Contact',label:'Contact · Liên hệ'}];
 const PROOFS = [
   { who: 'Chị Lan', at: 'Quận 7, TP.HCM', qty: 2, ago: '3 phút trước' },

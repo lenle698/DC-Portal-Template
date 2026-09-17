@@ -1978,7 +1978,7 @@ async function getPancakeConnection(connectionId = null) {
     return {
       id: 'env-pancake',
       sourceId: 'pancake',
-      name: 'DC - NanoBK (Pancake POS)',
+      name: 'Pancake POS (Official Connector)',
       enabled: true,
       config: { shopId: pancakeShopId, autoPushOrders: pancakeAutoPush },
       secrets: { apiKey: sealIntegrationSecret(pancakeApiKey) }
@@ -2018,21 +2018,6 @@ function resolvePancakeVariation(variations = [], item = {}, order = {}) {
   const candidateVariation = String(item.variation || order.variantName || order.comboName || '').trim().toLowerCase();
   const effectivePrice = Number(item.price || order.grossAmount || order.totalAmount || 0);
 
-  // Guard: If old trial pack SKU or ID (60k) is attached, but order price is >= 150.000đ, intercept and map to correct box!
-  const isPhuBac = /ph[ủũu] b[ạa]c|nanobk|phb/i.test(candidateName) || /ph[ủũu] b[ạa]c|nanobk|phb/i.test(candidateVariation) || candidateSku.includes('PHB');
-  if (isPhuBac && effectivePrice >= 150000 && (candidateId === '089328a6-a003-4b8b-95d4-d96096d5b31f' || candidateSku === 'NN-PHB-300-002-SYC-SGL')) {
-    if (effectivePrice >= 340000) {
-      const v3 = variations.find(v => String(v.id) === '62278c5b-4f1b-4057-b353-684e98ce994c' || String(v.display_id) === 'NN-PHB01-BOX-SYC-BDL-003');
-      if (v3) return v3;
-    } else if (effectivePrice >= 250000) {
-      const v2 = variations.find(v => String(v.id) === '35174ec9-838c-4f86-9be3-a1d4eb37267f' || String(v.display_id) === 'NN-PHB01-BOX-SYC-BDL-002');
-      if (v2) return v2;
-    } else {
-      const v1 = variations.find(v => String(v.id) === '85266e98-0273-4e38-a36e-b1ba63b137cd' || String(v.display_id) === 'NN-PHB01-BOX' || String(v.display_id) === 'NN-PHB01-BOX-SYC-SGL');
-      if (v1) return v1;
-    }
-  }
-
   // 1. Match by exact Pancake Variation ID
   if (candidateId) {
     const matchedById = variations.find(v => String(v.id || '').trim() === candidateId);
@@ -2048,46 +2033,16 @@ function resolvePancakeVariation(variations = [], item = {}, order = {}) {
     if (matchedBySku) return matchedBySku;
   }
 
-  // 3. Exact Canonical Matching by Known Product Names in DC Catalog
-  if (isPhuBac) {
-    if (candidateName.includes('gói lẻ') || candidateName.includes('goi le') || candidateVariation.includes('gói lẻ') || candidateSku === 'NN-PHB01-GOI') {
-      const vGoi = variations.find(v => String(v.display_id || '') === 'NN-PHB01-GOI');
-      if (vGoi) return vGoi;
-    }
-    const vBox = variations.find(v => String(v.display_id || '') === 'NN-PHB01-BOX' || String(v.display_id || '') === 'NN-PHB01-BOX-SYC-SGL');
-    if (vBox) return vBox;
-  }
-
-  if (candidateName.includes('velora') || candidateSku.includes('VEL')) {
-    const vVel = variations.find(v => String(v.display_id || '') === 'NN-VEL01-M450' || String(v.display_id || '') === 'NN-VEL01');
-    if (vVel) return vVel;
-  }
-
-  if (candidateName.includes('xịt thơm') || candidateName.includes('fabric') || candidateSku.includes('FAB')) {
-    const vFab = variations.find(v => String(v.display_id || '') === 'NN-FAB01-M350' || String(v.display_id || '') === 'NN-FAB01');
-    if (vFab) return vFab;
-  }
-
-  if (candidateName.includes('elixir') || candidateName.includes('elyxir') || candidateSku.includes('ELY')) {
-    const vEly = variations.find(v => String(v.display_id || '') === 'NN-ELY01-M450' || String(v.display_id || '') === 'NN-ELY01');
-    if (vEly) return vEly;
-  }
-
-  if (candidateName.includes('lumi') || candidateSku.includes('LUM')) {
-    const vLum = variations.find(v => String(v.display_id || '') === 'NN-LUM01-M450' || String(v.display_id || '') === 'NN-LUM01');
-    if (vLum) return vLum;
-  }
-
-  // 4. Exact match by variation display name in Pancake
+  // 3. Match by variation name or product name
   if (candidateName) {
     const matchedByName = variations.find(v => {
       const vName = String(v.name || '').trim().toLowerCase();
-      return vName && (vName === candidateName || (vName.length > 5 && candidateName === vName));
+      return vName && (vName === candidateName || (candidateName.length > 3 && vName.includes(candidateName)));
     });
     if (matchedByName) return matchedByName;
   }
 
-  // 5. STRICT RULE: DO NOT GUESS! If no exact match found, return null so error is reported!
+  // 4. Return null if no matching variation found
   return null;
 }
 
@@ -2119,25 +2074,18 @@ async function pushOrderToPancake(orderId, loginId = 'system', connection = null
   let apiKey = String(credentials.apiKey || conn?.config?.apiKey || pancakeApiKey || process.env.PANCAKE_API_KEY || '').trim();
   let shopId = String(credentials.shopId || conn?.config?.shopId || conn?.config?.accountId || pancakeShopId || process.env.PANCAKE_SHOP_ID || '').trim();
 
-  if (!apiKey || apiKey.length < 16) apiKey = '51ba7dd479d65aed1f27b534143348ae';
-  if (!shopId || !/^[0-9]+$/.test(shopId)) shopId = '1943058786';
+  if (!apiKey || apiKey.length < 16) {
+    return { success: false, reason: 'missing_config', message: 'Chưa cấu hình Pancake API Key.' };
+  }
+  if (!shopId || !/^[0-9]+$/.test(shopId)) {
+    return { success: false, reason: 'missing_config', message: 'Chưa cấu hình Pancake Shop ID.' };
+  }
 
   let warehouseId = String(conn?.config?.warehouseId || '').trim();
-  if (!warehouseId) {
-    warehouseId = '7005f04b-f5b6-4292-b96a-09db9897f26c'; // Kho DC x Nanobk HN
-  }
 
   const variations = await getPancakeVariations(shopId, apiKey);
 
   let rawItems = Array.isArray(order.items) && order.items.length ? order.items : [];
-  // Safeguard: If order has explicit productName, verify items align with it
-  if (order.productName && rawItems.length > 0) {
-    const oPNameLower = String(order.productName).toLowerCase();
-    const item0NameLower = String(rawItems[0].name || '').toLowerCase();
-    if ((oPNameLower.includes('phủ bạc') || oPNameLower.includes('phu bac')) && !item0NameLower.includes('phủ bạc') && !item0NameLower.includes('nanobk') && !item0NameLower.includes('phu bac')) {
-      rawItems = [];
-    }
-  }
   if (!rawItems.length) {
     rawItems = [
       {
@@ -2430,8 +2378,12 @@ async function syncPancakeOrders(connection = null, isManual = false) {
   let apiKey = String(credentials.apiKey || conn?.config?.apiKey || pancakeApiKey || process.env.PANCAKE_API_KEY || '').trim();
   let shopId = String(credentials.shopId || conn?.config?.shopId || conn?.config?.accountId || pancakeShopId || process.env.PANCAKE_SHOP_ID || '').trim();
 
-  if (!apiKey || apiKey.length < 16) apiKey = '51ba7dd479d65aed1f27b534143348ae';
-  if (!shopId || !/^[0-9]+$/.test(shopId)) shopId = '1943058786';
+  if (!apiKey || apiKey.length < 16) {
+    return { source: 'pancake', status: 'missing_config', imported: 0, message: 'Chưa cấu hình Pancake API Key.' };
+  }
+  if (!shopId || !/^[0-9]+$/.test(shopId)) {
+    return { source: 'pancake', status: 'missing_config', imported: 0, message: 'Chưa cấu hình Pancake Shop ID.' };
+  }
 
   // Distributed concurrency lock: avoid multiple Cloud Run instances running sync simultaneously
   if (!connection && !isManual) {
@@ -2475,50 +2427,6 @@ async function syncPancakeOrders(connection = null, isManual = false) {
     console.log(`[syncPancakeOrders] Upsert completed: ${imported} imported.`);
     // Run SKU backfill on all orders
     syncOrderSkus().catch(e => console.warn('[syncPancakeOrders] SKU backfill warning:', e?.message));
-    // Auto-heal any leads erroneously contaminated by Pancake order #23
-    try {
-      const contaminatedSnap = await firestore.collection('commerceOrders').where('orderCode', '==', 'LEAD-5DEB1523').limit(1).get();
-      if (!contaminatedSnap.empty) {
-        const leadDoc = contaminatedSnap.docs[0];
-        const d = leadDoc.data();
-        if (d.pancakeOrderId === '23' || (d.productName && d.productName.includes('Xịt Thơm Vải'))) {
-          const healPatch = {
-            pancakeOrderId: '',
-            pancakeOrderNumber: '',
-            syncedToPancake: false,
-            leadStatus: 'new',
-            status: 'pending',
-            fulfillmentStatus: 'unfulfilled',
-            trackingCode: '',
-            partnerName: '',
-            shippingCarrier: '',
-            customerNote: '',
-            assignedSalesName: '',
-            assignedSellerName: '',
-            warehouseName: '',
-            productName: 'PHỦ BẠC NANOBK, HỘP 10 GÓI 30ML',
-            productSku: 'NN-PHB01-BOX-SYC-SGL',
-            sku: 'NN-PHB01-BOX-SYC-SGL',
-            variantSku: 'NN-PHB01-BOX-SYC-SGL',
-            variantName: 'Hộp',
-            grossAmount: 169000,
-            subtotalAmount: 169000,
-            netAmount: 189000,
-            totalAmount: 189000,
-            shippingFee: 20000,
-            paymentMethod: 'COD',
-            customerAddress: 'Thôn 1 xã Phước năng huyện Phước Sơn tỉnh quảng nam',
-            customerStreet: 'Thôn 1 xã Phước năng huyện Phước Sơn tỉnh quảng nam',
-            timeline: [],
-            updatedAt: new Date()
-          };
-          await leadDoc.ref.set(healPatch, { merge: true });
-          await firestore.collection('salesLeads').doc(leadDoc.id).set(healPatch, { merge: true }).catch(() => null);
-        }
-      }
-    } catch (healErr) {
-      console.warn('[AutoHeal LEAD-5DEB1523 warning]:', healErr?.message);
-    }
     return { source: 'pancake', status: 'connected', imported, message: `Đã đồng bộ ${imported} đơn từ Pancake POS.` };
   } catch (err) {
     console.error('[syncPancakeOrders] Error:', err);
@@ -2604,8 +2512,12 @@ async function syncPancakeProducts(connection = null) {
   let apiKey = String(credentials.apiKey || conn?.config?.apiKey || pancakeApiKey || process.env.PANCAKE_API_KEY || '').trim();
   let shopId = String(credentials.shopId || conn?.config?.shopId || conn?.config?.accountId || pancakeShopId || process.env.PANCAKE_SHOP_ID || '').trim();
 
-  if (!apiKey || apiKey.length < 16) apiKey = '51ba7dd479d65aed1f27b534143348ae';
-  if (!shopId || !/^[0-9]+$/.test(shopId)) shopId = '1943058786';
+  if (!apiKey || apiKey.length < 16) {
+    return { source: 'pancake', status: 'missing_config', imported: 0, message: 'Chưa cấu hình Pancake API Key.' };
+  }
+  if (!shopId || !/^[0-9]+$/.test(shopId)) {
+    return { source: 'pancake', status: 'missing_config', imported: 0, message: 'Chưa cấu hình Pancake Shop ID.' };
+  }
 
   console.log(`[syncPancakeProducts] Syncing products for shop ${shopId}...`);
 
@@ -2647,7 +2559,7 @@ async function syncPancakeProducts(connection = null) {
   } catch (err) {
     console.warn('[syncPancakeProducts] Warehouses fetch warning:', err?.message);
   }
-  const defaultWarehouseName = pancakeWarehouses[0]?.name || 'Kho DC x Nanobk HN';
+  const defaultWarehouseName = pancakeWarehouses[0]?.name || 'Kho Mặc Định';
 
   // Index variations by product_id
   const variationsByProduct = new Map();
@@ -2857,7 +2769,7 @@ async function syncPancakeProducts(connection = null) {
       inventory: totalInventory,
       description,
       status: existingData.status || 'active',
-      vendor: existingData.vendor || (title.includes('NANOBK') ? 'NanoBK' : 'DC Vietnam'),
+      vendor: existingData.vendor || companyName || 'Organization',
       productType: existingData.productType || (categories[0]?.name || (title.toLowerCase().includes('shampoo') || title.toLowerCase().includes('gội') || title.toLowerCase().includes('xả') ? 'Chăm sóc tóc' : 'Chăm sóc da')),
       tags: [...new Set([...(existingData.tags || []), ...(Array.isArray(p.tags) ? p.tags : []), 'Pancake POS'])],
       channels: [...new Set([...(existingData.channels || ['Lead form', 'Website']), 'Pancake POS'])],
@@ -2937,11 +2849,15 @@ async function syncPancakeProducts(connection = null) {
 async function syncPancakeCustomers(connection = null) {
   const conn = connection || await getPancakeConnection();
   const credentials = conn ? integrationConnectionCredentials(conn) : {};
-  let apiKey = String(credentials.apiKey || conn?.config?.apiKey || pancakeApiKey || process.env.PANCAKE_API_KEY || '51ba7dd479d65aed1f27b534143348ae').trim();
-  let shopId = String(credentials.shopId || conn?.config?.shopId || conn?.config?.accountId || pancakeShopId || process.env.PANCAKE_SHOP_ID || '1943058786').trim();
+  let apiKey = String(credentials.apiKey || conn?.config?.apiKey || pancakeApiKey || process.env.PANCAKE_API_KEY || '').trim();
+  let shopId = String(credentials.shopId || conn?.config?.shopId || conn?.config?.accountId || pancakeShopId || process.env.PANCAKE_SHOP_ID || '').trim();
 
-  if (!apiKey || apiKey.length < 16) apiKey = '51ba7dd479d65aed1f27b534143348ae';
-  if (!shopId || !/^[0-9]+$/.test(shopId)) shopId = '1943058786';
+  if (!apiKey || apiKey.length < 16) {
+    return { source: 'pancake', status: 'missing_config', imported: 0, message: 'Chưa cấu hình Pancake API Key.' };
+  }
+  if (!shopId || !/^[0-9]+$/.test(shopId)) {
+    return { source: 'pancake', status: 'missing_config', imported: 0, message: 'Chưa cấu hình Pancake Shop ID.' };
+  }
 
   console.log(`[syncPancakeCustomers] Syncing customers for shop ${shopId}...`);
 
@@ -3215,7 +3131,7 @@ async function upsertCustomerFromOrder(order = {}) {
       id: docId,
       customerId: existing.customerId || docId,
       pancakeId: existing.pancakeId || String(order.pancakeCustomerId || order.customerId || ''),
-      pancakeShopId: existing.pancakeShopId || String(order.pancakeShopId || pancakeShopId || '1943058786'),
+      pancakeShopId: existing.pancakeShopId || String(order.pancakeShopId || pancakeShopId || ''),
       name,
       phone: cleanP,
       phoneNumbers: [...new Set([...(existing.phoneNumbers || []), cleanP])],
@@ -3658,7 +3574,6 @@ async function validOrderWebhookSecret(suppliedValue, connectionId = '', source 
   if (!suppliedValue) return false;
   const clean = String(suppliedValue).trim();
   if (orderIngestSecret && clean === orderIngestSecret) return true;
-  if (clean === 'dc_pancake_2026') return true;
   if (connectionId) {
     try {
       const snap = await firestore.collection('integrationConnections').doc(connectionId).get();
@@ -4028,7 +3943,7 @@ function publicSalesForm(id, form = {}) {
 }
 
 function managedSalesForm(id, form = {}, viewerId = '', ownerName = '', role = '') {
-  const isAdmin = role === 'admin' || viewerId === 'api_secret' || viewerId === '36256544ec8b8da278289b6b';
+  const isAdmin = role === 'admin' || viewerId === 'api_secret';
   const isOwner = Boolean(viewerId && form.createdBy === viewerId);
   return {
     ...publicSalesForm(id, form),
@@ -4152,7 +4067,7 @@ function integrationField(key, label, options = {}) {
 }
 
 const integrationDefinitions = [
-  { id:'meta_crm_events', name:'Meta CRM Conversions API', category:'events', description:'Tích hợp sự kiện chuyển đổi CRM (CAPI v26.0) - Gắn Token API CRM vào Dataset/Pixel để bắn sự kiện Lead, Qualified, Purchase', icon:'hub', mode:'Conversions API v26.0', cadence:'Realtime & Theo trạng thái CRM', setup:['ID Tập dữ liệu (Dataset / Pixel ID)','Access Token API CRM','Mã thử nghiệm (tùy chọn)'], configured:()=>true, fields:[integrationField('datasetId','ID Tập dữ liệu / Pixel ID',{placeholder:'Ví dụ: 1701928761494043'}),integrationField('accessToken','Access Token API CRM (Conversions API)',{secret:true,placeholder:'EAAPiPZBf86ig...'}),integrationField('graphVersion','Phiên bản Graph API',{placeholder:'v26.0',required:false}),integrationField('testEventCode','Mã sự kiện thử nghiệm (Test Event Code)',{placeholder:'Ví dụ: TEST12345 (xem trong Trình quản lý sự kiện)',required:false}),integrationField('pixelName','Tên gợi nhớ / Tên Pixel',{placeholder:'Ví dụ: NANOBK-VN',required:false})] },
+  { id:'meta_crm_events', name:'Meta CRM Conversions API', category:'events', description:'Tích hợp sự kiện chuyển đổi CRM (CAPI v26.0) - Gắn Token API CRM vào Dataset/Pixel để bắn sự kiện Lead, Qualified, Purchase', icon:'hub', mode:'Conversions API v26.0', cadence:'Realtime & Theo trạng thái CRM', setup:['ID Tập dữ liệu (Dataset / Pixel ID)','Access Token API CRM','Mã thử nghiệm (tùy chọn)'], configured:()=>true, fields:[integrationField('datasetId','ID Tập dữ liệu / Pixel ID',{placeholder:'Ví dụ: 1234567890123456'}),integrationField('accessToken','Access Token API CRM (Conversions API)',{secret:true,placeholder:'EAA...'}),integrationField('graphVersion','Phiên bản Graph API',{placeholder:'v26.0',required:false}),integrationField('testEventCode','Mã sự kiện thử nghiệm (Test Event Code)',{placeholder:'Ví dụ: TEST12345 (xem trong Trình quản lý sự kiện)',required:false}),integrationField('pixelName','Tên gợi nhớ / Tên Pixel',{placeholder:'Ví dụ: Marketing Pixel',required:false})] },
     { id:'lark_bot', name:'Lark Bot Notifications', category:'notifications', description:'Báº¯n thÃ´ng bÃ¡o Ä‘Æ¡n hÃ ng & lead form vÃ o nhÃ³m chat Lark', icon:'smart_toy', mode:'Webhook / Bot API', cadence:'Realtime', setup:['Webhook URL / Chat ID'], configured:()=>true, fields:[integrationField('webhookUrl','Lark Webhook URL / Chat ID',{placeholder:'https://open.larksuite.com/open-apis/bot/v2/hook/... hoáº·c oc_...'}), integrationField('notifyOnLeads','BÃ¡o Lead Form (true/false)',{required:false,placeholder:'true'}), integrationField('notifyOnOrders','BÃ¡o ÄÆ¡n HÃ ng (true/false)',{required:false,placeholder:'true'})] },  { id:'lark', name:'Lark Contacts', category:'organization', description:'Nhân sự, phòng ban và sơ đồ tổ chức', icon:'groups', mode:'API', cadence:'Theo lịch', setup:['App ID','App Secret'], configured:()=>Boolean(appId && appSecret), fields:[integrationField('appId','App ID',{placeholder:'cli_...'}),integrationField('appSecret','App Secret',{secret:true})] },
   { id:'bluecore', name:'Bluecore', category:'warehouse', description:'Dữ liệu bán hàng và vận hành từ Bluecore', icon:'database', mode:'BigQuery', cadence:'Theo lịch nguồn', setup:['Project ID','Dataset','Access token'], configured:()=>Boolean(bluecoreProject && bluecoreDataset), fields:[integrationField('projectId','Google Cloud Project'),integrationField('dataset','Dataset'),integrationField('accessToken','OAuth access token',{secret:true,required:false})] },
   { id:'bigquery', name:'BigQuery Warehouse', category:'warehouse', description:'Kho dữ liệu chuẩn hóa trung tâm', icon:'dns', mode:'Warehouse', cadence:'Theo pipeline', setup:['Project ID','Dataset','Access token'], configured:()=>Boolean(bigQueryProject && bigQueryDataset), fields:[integrationField('projectId','Google Cloud Project'),integrationField('dataset','Dataset'),integrationField('accessToken','OAuth access token',{secret:true,required:false})] },
@@ -4160,7 +4075,7 @@ const integrationDefinitions = [
     integrationField('shopId','Mã cửa hàng (Shop ID)',{placeholder:'Ví dụ: 1234567 (xem URL hoặc Cài đặt trên Pancake)',required:false,help:'Mã ID shop trên Pancake POS để gọi API'}),
     integrationField('apiKey','Pancake API Key',{secret:true,required:false,placeholder:'Dán API Key lấy từ tab API Key trong Pancake POS',help:'Lấy từ Pancake POS -> Cấu hình -> Webhook / API -> Tab API Key'}),
     integrationField('autoPushOrders','Tự động đẩy đơn mới lên Pancake (true/false)',{required:false,placeholder:'false',help:'Nếu bật (true), đơn mới từ Lead Form và Manual sẽ tự động được đẩy lên Pancake POS'}),
-    integrationField('webhookSecret','Webhook secret',{secret:true,required:false,placeholder:'dc_pancake_2026',help:'Mặc định: dc_pancake_2026 hoặc nhập mã bí mật riêng'})
+    integrationField('webhookSecret','Webhook secret',{secret:true,required:false,placeholder:'your_webhook_secret',help:'Mã bí mật dùng để xác thực webhook từ Pancake'})
   ] },
   { id:'shopee', name:'Shopee', category:'commerce', description:'Đơn hàng và trạng thái giao dịch Shopee', icon:'shopping_bag', mode:'Webhook', cadence:'Realtime', setup:['Shop ID','Webhook secret'], configured:()=>Boolean(orderIngestSecret), fields:[integrationField('accountId','Shop ID'),integrationField('webhookSecret','Webhook secret',{secret:true,required:false})] },
   { id:'lazada', name:'Lazada', category:'commerce', description:'Đơn hàng và trạng thái giao dịch Lazada', icon:'shopping_cart', mode:'Webhook', cadence:'Realtime', setup:['Seller ID','Webhook secret'], configured:()=>Boolean(orderIngestSecret), fields:[integrationField('accountId','Seller ID'),integrationField('webhookSecret','Webhook secret',{secret:true,required:false})] },
@@ -5427,8 +5342,8 @@ async function executeIntegrationConnection(definition, connection, action) {
         event_id: `TEST-${Date.now().toString(36).toUpperCase()}`,
         event_source_url: portalBaseUrl ? `${portalBaseUrl}/` : 'https://example.com/',
         user_data: {
-          em: ['7b17fb0bd173f625b58636fb796407c22b3d16fc78302d79f0fd30c2fc2fc068'],
-          ph: ['6069d14bf122fdfd931dc7beb58e5dfbba395b1faf05bdcd42d12358d63d8599']
+          em: [createHash('sha256').update('test@example.com').digest('hex')],
+          ph: [createHash('sha256').update('84900000000').digest('hex')]
         },
         custom_data: {
           event_source: 'crm',
@@ -5568,10 +5483,9 @@ function publicTrackingUrl(number, carrier = '') {
 async function fetchPancakeTracking(number, order = {}) {
   const conn = await getPancakeConnection();
   const credentials = conn ? integrationConnectionCredentials(conn) : {};
-  let apiKey = String(credentials.apiKey || conn?.config?.apiKey || pancakeApiKey || process.env.PANCAKE_API_KEY || '51ba7dd479d65aed1f27b534143348ae').trim();
-  let shopId = String(credentials.shopId || conn?.config?.shopId || conn?.config?.accountId || pancakeShopId || process.env.PANCAKE_SHOP_ID || '1943058786').trim();
-  if (!apiKey || apiKey.length < 16) apiKey = '51ba7dd479d65aed1f27b534143348ae';
-  if (!shopId || !/^[0-9]+$/.test(shopId)) shopId = '1943058786';
+  let apiKey = String(credentials.apiKey || conn?.config?.apiKey || pancakeApiKey || process.env.PANCAKE_API_KEY || '').trim();
+  let shopId = String(credentials.shopId || conn?.config?.shopId || conn?.config?.accountId || pancakeShopId || process.env.PANCAKE_SHOP_ID || '').trim();
+  if (!apiKey || !shopId) return null;
 
   let pOrder = null;
   const pId = String(order.pancakeOrderId || order.sourceOrderId || '').replace(/^0+/, '');
@@ -6340,7 +6254,7 @@ function buildLarkOrderSuccessCard(order = {}, options = {}) {
   ];
 
   if (rawPancakeId) {
-    const shopId = String(order.pancakeShopId || pancakeShopId || '1943058786').trim();
+    const shopId = String(order.pancakeShopId || pancakeShopId || '').trim();
     actions.push({
       tag: 'button',
       text: { tag: 'plain_text', content: '📦 Xem trên Pancake' },
@@ -8376,7 +8290,7 @@ createServer(async (request, response) => {
     try {
       const body = await readJson(request).catch(() => ({}));
       const secret = String(request.headers['x-order-secret'] || body.secret || requestUrl.searchParams.get('secret') || '').trim();
-      let isAuth = secret === (process.env.ORDER_INGEST_SECRET || 'dc_pancake_2026');
+      let isAuth = Boolean(orderIngestSecret && secret === orderIngestSecret);
       if (!isAuth) {
         const loginId = sessionLoginId(request);
         if (loginId) {
@@ -8390,11 +8304,11 @@ createServer(async (request, response) => {
       const mockOrder = {
         orderCode: body.orderCode || 'ORD-TEST-8888',
         canonicalOrderId: 'test-canonical-order-id',
-        pancakeOrderId: body.pancakeOrderId || '1943058786001',
-        pancakeOrderNumber: body.pancakeOrderNumber || '1943058786-001',
+        pancakeOrderId: body.pancakeOrderId || '1000000001',
+        pancakeOrderNumber: body.pancakeOrderNumber || 'ORD-100001',
         channel: body.channel || (String(body.orderCode || '').startsWith('LEAD-') ? 'Lead Form' : 'Shopee'),
         sourceSystem: body.sourceSystem || (String(body.orderCode || '').startsWith('LEAD-') ? 'lead_form' : 'pancake'),
-        productName: body.productName || 'Combo Phủ Bạc Nanobk Chính Hãng (Hộp 10 Gói 30ml)',
+        productName: body.productName || 'Combo Dưỡng Da Mẫu (Hộp 10 Gói 30ml)',
         customerName: body.customerName || 'Nguyễn Văn Test (Vận Đơn DC)',
         customerPhone: body.customerPhone || '0988888888',
         customerAddress: body.customerAddress || 'Số 123 Đường Cầu Giấy, Phường Dịch Vọng, Quận Cầu Giấy, Hà Nội',
@@ -8411,14 +8325,14 @@ createServer(async (request, response) => {
         paymentMethod: 'COD',
         items: [
           {
-            name: 'Combo Phủ Bạc Nanobk Chính Hãng (Hộp 10 Gói 30ml)',
+            name: 'Combo Dưỡng Da Mẫu (Hộp 10 Gói 30ml)',
             variation: 'Đen Tự Nhiên',
             sku: 'NN-PHB01-BOX-SYC-SGL',
             quantity: 2,
             price: 169000
           },
           {
-            name: 'Xịt Dưỡng Tóc Bưởi Rừng Nanobk 100ml',
+            name: 'Sản phẩm dưỡng tóc mẫu 100ml',
             variation: 'Chai 100ml',
             sku: 'NN-XDT01-BTL-100',
             quantity: 1,
@@ -9238,37 +9152,16 @@ createServer(async (request, response) => {
         const shippingCarrier = fixMojibake(String(body.shippingCarrier || 'GHTK').trim());
         const paymentMethod = 'COD';
         const shippingNote = fixMojibake(String(body.shippingNote || '').trim());
-        let confirmedProductName = fixMojibake(body.productName || leadData.productName || 'PHỦ BẠC NANOBK, HỘP 10 GÓI 30ML');
+        let confirmedProductName = fixMojibake(body.productName || leadData.productName || 'SẢN PHẨM MẪU TIÊU CHUẨN');
         const confirmedItemCount = Math.max(1, Number(body.itemCount || leadData.itemCount || 1));
         const confirmedGross = Math.max(0, orderAmount(body.grossAmount || leadData.grossAmount || 169000));
         const confirmedUnitPrice = confirmedItemCount > 0 ? Math.round(confirmedGross / confirmedItemCount) : confirmedGross;
 
-        const isPhuBac = /ph[ủũu] b[ạa]c|nanobk|phb/i.test(confirmedProductName) || /ph[ủũu] b[ạa]c|nanobk|phb/i.test(leadData.productName || '') || String(leadData.productSku || leadData.sku || '').includes('PHB');
-
         let resolvedSku = leadData.productSku || leadData.sku || '';
         let resolvedItemSku = resolvedSku;
         let resolvedVariantId = leadData.variantId || '';
-        let resolvedVariantName = leadData.variantName || leadData.comboName || 'Hộp';
+        let resolvedVariantName = leadData.variantName || leadData.comboName || 'Tiêu chuẩn';
         let resolvedProductId = leadData.productId || '';
-
-        if (isPhuBac) {
-          confirmedProductName = 'PHỦ BẠC NANOBK, HỘP 10 GÓI 30ML';
-          resolvedProductId = 'rHm73vHAC4vOmMCjT6tN';
-          resolvedSku = 'NN-PHB01-BOX';
-          if (confirmedGross >= 340000 || confirmedItemCount >= 3) {
-            resolvedItemSku = 'NN-PHB01-BOX-SYC-BDL-003';
-            resolvedVariantId = '62278c5b-4f1b-4057-b353-684e98ce994c';
-            resolvedVariantName = '3 Hộp';
-          } else if (confirmedGross >= 250000 || confirmedItemCount === 2) {
-            resolvedItemSku = 'NN-PHB01-BOX-SYC-BDL-002';
-            resolvedVariantId = '35174ec9-838c-4f86-9be3-a1d4eb37267f';
-            resolvedVariantName = '2 Hộp';
-          } else {
-            resolvedItemSku = 'NN-PHB01-BOX';
-            resolvedVariantId = '85266e98-0273-4e38-a36e-b1ba63b137cd';
-            resolvedVariantName = 'Hộp';
-          }
-        }
 
         // =========================================================================
         // PRE-VALIDATION: "Check đủ mới cho hoàn thành lên đơn"
@@ -9555,7 +9448,7 @@ createServer(async (request, response) => {
       const formMatch=requestUrl.pathname.match(/^\/api\/sales-forms\/([a-zA-Z0-9_-]+)$/);
       if(formMatch&&request.method==='PATCH'){
         const ref=firestore.collection('salesForms').doc(formMatch[1]);const snapshot=await ref.get();if(!snapshot.exists)return json(response,404,{error:'Không tìm thấy form.'});
-        const isFormAdmin = access.role === 'admin' || loginId === 'api_secret' || loginId === '36256544ec8b8da278289b6b';
+        const isFormAdmin = access.role === 'admin' || loginId === 'api_secret';
         if(!isFormAdmin && snapshot.data()?.createdBy!==loginId)return json(response,403,{error:'Form của người khác chỉ được xem, bạn không thể chỉnh sửa.'});
         const body=await readJson(request);const form=normalizedSalesForm(body,snapshot.data());
         if(!form.name||!form.productName||form.slug.length<3)return json(response,400,{error:'Tên form, sản phẩm và đường dẫn là bắt buộc.'});
@@ -9904,235 +9797,6 @@ createServer(async (request, response) => {
         return json(response, 200, { ok: true, deletedId: snapshot.id });
       }
       if (access.level === 'employee') return json(response, 403, { error: 'Only managers can run or import order synchronization' });
-      if (request.method === 'POST' && requestUrl.pathname === '/api/orders/restore-leads') {
-        const canonicalDocIds = new Set([
-          'eaef47fd25fadf7a291f8b73de5073265d5c033fb721f5dcd686717f85afed07', // 137 (ORD-0FBE31F8)
-          '8b19e8483635af791a13e7f3ab7b51fd10cf2b60545f23c174d3d2c6f5333542', // 138 (ORD-0A6C6F13)
-          '5f7dbd15db6826f94c6a61001bbe0eee68804cf313b920d6167380bacb5bb2e4', // 139 (ORD-52AE301E)
-          '5f35c8ec738711cea6af4151a1fc7ecca8f6aa44bf59aaac505985cf76017363', // 140 (ORD-46B29D2F)
-          '1a87c40e42d3efc20a9e21da0af4cdcbbf73efbdc806f943a48d5fc4243f08ba', // 141 (ORD-55CCACD3)
-          '0fe9769f3b9143d75cb47a27b3d4fed1ddfc1bd5bf319af95875fb356072e5f6', // 142 (ORD-3C78AD3D)
-          '9597504b2cdfeb54961a6549dad1fdc18eadf0b8ff85ebeb95a5ee0a6e62ceea'  // 143 (LEAD-119AA3C9)
-        ]);
-
-        const knownDupIds = new Set([
-          'dadab23b224112f7fb8bb1ec582761eb04434f2968dac839ddd94ba18899f19a',
-          'ea71c3307e2ea7775ae8fa032ab6f83a8f2d6fd4c7b99c640ef2197fac04f905',
-          'a2e1f9df2380195c3f0fe4113b462b7ed011bc25ca9b96bfab238841b5dc90f9',
-          'a3040aa182b6f05b8c49c6f9811f7ce51fa19d48280ecd2469579af708b774db',
-          'f3399dd9784e076838eddf4e19779097cbee198916952333c171cdbfe3feee1f',
-          '21cb83fc5b86c133ca51d6501475e4572aec3552faee4266913fda7730124086',
-          '21d683d31cd6798c284221ec37547aaf4af93490577305542eacf07219b1411d',
-          'lead-form-lead-B20116'
-        ]);
-
-        const conn = await getPancakeConnection();
-        const credentials = conn ? integrationConnectionCredentials(conn) : {};
-        let apiKey = String(credentials.apiKey || conn?.config?.apiKey || pancakeApiKey || process.env.PANCAKE_API_KEY || '51ba7dd479d65aed1f27b534143348ae').trim();
-        let shopId = String(credentials.shopId || conn?.config?.shopId || conn?.config?.accountId || pancakeShopId || process.env.PANCAKE_SHOP_ID || '1943058786').trim();
-        if (!apiKey || apiKey.length < 16) apiKey = '51ba7dd479d65aed1f27b534143348ae';
-        if (!shopId || !/^[0-9]+$/.test(shopId)) shopId = '1943058786';
-
-        const targetMap = {
-          '0989297131': { pCode: '137', pId: 137, ordCode: 'ORD-0FBE31F8', name: 'Là văn thoan', address: 'bản Minh Thắng, Xã Tuần Giáo, Điện Biên', qty: 1, subtotal: 169000, discount: 0, shipping: 20000, cod: 189000, formName: 'Form Dầu gội phũ bạc NANOBK _ Hải - 04/09', formCreatorName: 'DC0009_Lê Ngọc Hải', formId: 'mpK2ySxbRMSLrmkrT335', formSlug: 'form-mtl1zvtt' },
-          '0903718190': { pCode: '138', pId: 138, ordCode: 'ORD-0A6C6F13', name: 'Lê Minh Trí', address: '41 Ðinh Tiên Hoàng, Phường Sài Gòn, Hồ Chí Minh', qty: 2, subtotal: 338000, discount: 49000, shipping: 0, cod: 289000, formName: 'Form Dầu gội phũ bạc NANOBK _ Hải - 04/09', formCreatorName: 'DC0009_Lê Ngọc Hải', formId: 'mpK2ySxbRMSLrmkrT335', formSlug: 'form-mtl1zvtt' },
-          '0903950098': { pCode: '139', pId: 139, ordCode: 'ORD-52AE301E', name: 'Việt Hoa', address: '21 trương công định f14, Phường Tân Bình, Hồ Chí Minh', qty: 3, subtotal: 507000, discount: 138000, shipping: 0, cod: 369000, formName: 'Form Dầu gội phũ bạc NANOBK _ Hải - 04/09', formCreatorName: 'DC0009_Lê Ngọc Hải', formId: 'mpK2ySxbRMSLrmkrT335', formSlug: 'form-mtl1zvtt' },
-          '0974917886': { pCode: '140', pId: 140, ordCode: 'ORD-46B29D2F', name: 'Phạm văn dương', address: 'Đường Trương Định phường An Tảo Tp Hưng yên', qty: 1, subtotal: 169000, discount: 0, shipping: 20000, cod: 189000, formName: 'Form Dầu gội phũ bạc NANOBK _ Hải - 04/09', formCreatorName: 'DC0009_Lê Ngọc Hải', formId: 'mpK2ySxbRMSLrmkrT335', formSlug: 'form-mtl1zvtt' },
-          '0903822306': { pCode: '141', pId: 141, ordCode: 'ORD-55CCACD3', name: 'Đặng hoàng lân', address: 'Số nhà 45 Lê Quang định phường thắng nhất thành phố Vũng tàu', qty: 1, subtotal: 169000, discount: 0, shipping: 20000, cod: 189000, formName: 'Form Dầu gội phũ bạc NANOBK', formCreatorName: 'DC0009_Lê Ngọc Hải', formId: 'mpK2ySxbRMSLrmkrT335', formSlug: 'form-mtl1zvtt' },
-          '0899818088': { pCode: '142', pId: 142, ordCode: 'ORD-3C78AD3D', name: 'Hoá', address: 'Khu đo thị kim sơn, phường triển khơi tỉnh sơn la', qty: 1, subtotal: 169000, discount: 0, shipping: 20000, cod: 189000, formName: '03/09 - Nghiêm -Phủ bạc NANOBK', formCreatorName: 'DC0006_Huỳnh  Lê Trung Nghiêm', formId: 'JZV5sdyaBGQKDod1oGA4', formSlug: 'form-mtl6kniy' },
-          '0994347777': { pCode: '143', pId: 143, ordCode: 'LEAD-119AA3C9', convertedOrderCode: 'ORD-119AA3C9', name: 'Khúc văn đãng', address: 'Cẩm Sơn, Xã Cẩm Xá, Thị xã Mỹ Hào, Hưng Yên', qty: 2, subtotal: 338000, discount: 0, shipping: 0, cod: 338000, isLead: true, formName: 'Form Dầu gội phũ bạc NANOBK _ Hải - 04/09', formCreatorName: 'DC0009_Lê Ngọc Hải', formId: 'mpK2ySxbRMSLrmkrT335', formSlug: 'form-mtl1zvtt' }
-        };
-        const activePCodes = Object.values(targetMap).map(t => t.pCode);
-        const snap = await firestore.collection('commerceOrders').get();
-        let restoredCount = 0;
-        let clearedCount = 0;
-        const now = new Date();
-        const seenTarget = new Set();
-
-        for (const doc of snap.docs) {
-          const d = doc.data() || {};
-          const cleanPhone = String(d.customerPhone || '').replace(/\D/g, '').replace(/^84/, '0');
-          const rawSrcId = String(d.sourceOrderId || '').trim();
-
-          // 1. Delete known duplicate documents (never delete canonical docs)
-          if (knownDupIds.has(doc.id) && !canonicalDocIds.has(doc.id)) {
-            await doc.ref.delete().catch(() => null);
-            clearedCount++;
-            continue;
-          }
-
-          // 2. Delete auto-sync pancake duplicates that have numeric sourceOrderId and no form info
-          if ((d.sourceSystem === 'pancake' || d.sourceSystem === 'lead_form') && activePCodes.includes(rawSrcId) && !d.formId && !d.formSlug && !canonicalDocIds.has(doc.id)) {
-            await doc.ref.delete().catch(() => null);
-            clearedCount++;
-            continue;
-          }
-
-          const matchedTarget = targetMap[cleanPhone] || Object.values(targetMap).find(t => t.ordCode === d.orderCode || t.pCode === d.orderCode || t.ordCode === d.originalOrderCode || String(d.sourceOrderId || '').includes(t.ordCode.replace(/^(ORD|LEAD)-/, '')));
-
-          if (matchedTarget && (!seenTarget.has(matchedTarget.pCode) || canonicalDocIds.has(doc.id))) {
-            seenTarget.add(matchedTarget.pCode);
-            let pOrder = null;
-            try {
-              const pRes = await fetch(`https://pos.pages.fm/api/v1/shops/${shopId}/orders/${matchedTarget.pId}?api_key=${apiKey}`);
-              if (pRes.ok) {
-                const pData = await pRes.json().catch(() => ({}));
-                pOrder = pData.order || pData.data?.order || pData.data;
-              }
-            } catch {}
-
-            const pStatusNum = pOrder ? Number(pOrder.status) : (matchedTarget.pCode === '143' ? 0 : 9);
-            const liveStatus = pStatusNum === 0 ? 'new' : (pStatusNum === 9 ? 'waiting_shipment' : (pStatusNum === 2 ? 'shipping' : (pStatusNum === 3 ? 'completed' : 'new')));
-            const partnerObj = pOrder?.partner || {};
-            const carrier = partnerObj.partner_name || (pOrder?.partner_name) || (matchedTarget.pCode === '143' && !partnerObj.extend_code ? '' : 'J&T');
-            const track = partnerObj.extend_code || (pOrder?.tracking_code) || '';
-            const rawUpdates = Array.isArray(partnerObj.extend_update) ? partnerObj.extend_update : [];
-            const updates = [...rawUpdates].sort((a, b) => new Date(b.update_at || b.time || 0) - new Date(a.update_at || a.time || 0));
-            const latestUpdate = updates[0] || null;
-            const liveFulfillment = normalizedFulfillmentStatus(pOrder || {}, liveStatus);
-            const trackingSnapshot = track ? {
-              provider: `Pancake / ${carrier}`,
-              carrierName: carrier,
-              trackingCode: track,
-              status: liveStatus,
-              statusLabel: liveStatus === 'waiting_shipment' ? (latestUpdate?.status || 'Chờ vận chuyển lấy hàng') : (liveFulfillment === 'delivery_delay' ? (latestUpdate?.status || 'Chờ giao lại') : (liveStatus === 'new' ? 'Mới tiếp nhận' : (latestUpdate?.status || 'Đang xử lý'))),
-              fulfillmentStatus: liveFulfillment,
-              latestDescription: latestUpdate?.status || (liveStatus === 'waiting_shipment' ? 'Chờ vận chuyển lấy hàng' : 'Đơn hàng mới'),
-              events: updates.map(ev => ({
-                time: ev.update_at || ev.time || '',
-                description: fixMojibake(ev.status || ev.note || 'Cập nhật hành trình'),
-                location: fixMojibake(ev.location || '')
-              })),
-              checkedAt: now.toISOString(),
-              externalUrl: pOrder?.order_link || `https://jtexpress.vn/vi/tracking?billcode=${encodeURIComponent(track)}`
-            } : null;
-
-            const updatePayload = {
-              orderCode: matchedTarget.ordCode,
-              originalOrderCode: matchedTarget.ordCode,
-              channel: 'Lead Form',
-              salesChannel: 'lead_form',
-              sourceSystem: 'lead_form',
-              status: liveStatus,
-              fulfillmentStatus: liveFulfillment,
-              financialStatus: 'pending',
-              leadStatus: 'converted',
-              convertedOrderCode: matchedTarget.convertedOrderCode || matchedTarget.ordCode,
-              shippingCarrier: carrier,
-              trackingCode: track,
-              trackingSnapshot,
-              pancakeStatus: pOrder?.status_name || (liveStatus === 'waiting_shipment' ? 'pending' : 'new'),
-              pancakeStatusName: liveStatus === 'waiting_shipment' ? 'Chờ chuyển hàng' : (liveStatus === 'new' ? 'Mới' : (pOrder?.status_name || '')),
-              customerName: matchedTarget.name,
-              customerPhone: cleanPhone,
-              customerAddress: matchedTarget.address,
-              grossAmount: matchedTarget.subtotal,
-              subtotalAmount: matchedTarget.subtotal,
-              discountAmount: matchedTarget.discount,
-              shippingFee: matchedTarget.shipping,
-              netAmount: matchedTarget.cod,
-              totalAmount: matchedTarget.cod,
-              codAmount: matchedTarget.cod,
-              productName: 'PHỦ BẠC NANOBK, HỘP 10 GÓI X 30ML',
-              productSku: 'NN-PHB01-BOX',
-              itemCount: matchedTarget.qty,
-              formId: matchedTarget.formId || d.formId || 'mpK2ySxbRMSLrmkrT335',
-              formSlug: matchedTarget.formSlug || d.formSlug || 'form-mtl1zvtt',
-              formName: matchedTarget.formName || d.formName || 'Form Dầu gội phũ bạc NANOBK _ Hải - 04/09',
-              formCreatorName: matchedTarget.formCreatorName || d.formCreatorName || 'DC0009_Lê Ngọc Hải',
-              leadChannel: 'Direct',
-              utmSource: d.utmSource || 'facebook',
-              utmMedium: d.utmMedium || 'cpc',
-              utmCampaign: d.utmCampaign || 'Nanobk_PhuBac_0409',
-              syncedToPancake: true,
-              pancakeOrderId: matchedTarget.pCode,
-              pancakeOrderNumber: matchedTarget.pCode,
-              pancakeSyncedAt: now,
-              updatedAt: now,
-              isDuplicate: false,
-              duplicateReason: '',
-              duplicateOf: ''
-            };
-            await doc.ref.set(updatePayload, { merge: true });
-            await firestore.collection('salesLeads').doc(doc.id).set(updatePayload, { merge: true }).catch(() => null);
-            restoredCount++;
-          } else if (matchedTarget && seenTarget.has(matchedTarget.pCode) && !canonicalDocIds.has(doc.id)) {
-            await doc.ref.delete().catch(() => null);
-            clearedCount++;
-          }
-        }
-        return json(response, 200, { ok: true, restoredCount, clearedCount, message: `Đã dọn dẹp ${clearedCount} đơn trùng lặp và đồng bộ ${restoredCount} đơn Lead Form chuẩn xác theo Pancake POS.` });
-      }
-      if (request.method === 'GET' && requestUrl.pathname === '/api/orders/pancake-2way-audit') {
-        const conn = await getPancakeConnection();
-        const credentials = conn ? integrationConnectionCredentials(conn) : {};
-        let apiKey = String(credentials.apiKey || conn?.config?.apiKey || pancakeApiKey || process.env.PANCAKE_API_KEY || '51ba7dd479d65aed1f27b534143348ae').trim();
-        let shopId = String(credentials.shopId || conn?.config?.shopId || conn?.config?.accountId || pancakeShopId || process.env.PANCAKE_SHOP_ID || '1943058786').trim();
-        if (!apiKey || apiKey.length < 16) apiKey = '51ba7dd479d65aed1f27b534143348ae';
-        if (!shopId || !/^[0-9]+$/.test(shopId)) shopId = '1943058786';
-
-        const targetPhones = ['0989297131', '0903718190', '0903950098', '0974917886', '0903822306', '0899818088'];
-        const snap = await firestore.collection('commerceOrders').get();
-        const leadOrders = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(o => targetPhones.includes(String(o.customerPhone||'').replace(/\D/g,'').replace(/^84/,'0')));
-
-        const auditList = [];
-        for (const o of leadOrders) {
-          const pId = parseInt(o.pancakeOrderId || o.orderCode, 10);
-          let pOrder = null;
-          if (pId) {
-            try {
-              const pRes = await fetch(`https://pos.pages.fm/api/v1/shops/${shopId}/orders/${pId}?api_key=${apiKey}`);
-              const pData = await pRes.json();
-              pOrder = pData.order || pData.data?.order || pData.data;
-            } catch (err) {}
-          }
-          const pActive = pOrder && pOrder.status !== 6 && pOrder.status !== 7;
-          const matchFinancial = Boolean(
-            pOrder &&
-            (pOrder.total_price === o.grossAmount || pOrder.total_price === o.subtotalAmount) &&
-            ((pOrder.total_discount || 0) === (o.discountAmount || 0)) &&
-            ((pOrder.shipping_fee || 0) === (o.shippingFee || 0)) &&
-            (pOrder.cod === (o.totalAmount || o.codAmount) || pOrder.money_to_collect === (o.totalAmount || o.codAmount))
-          );
-          const isVerified = Boolean(pActive && o.channel === 'Lead Form' && (o.status === 'unfulfilled' || o.status === 'confirmed') && matchFinancial);
-          auditList.push({
-            orderCode: o.orderCode,
-            originalOrderCode: o.originalOrderCode || o.orderCode,
-            customerName: o.customerName,
-            customerPhone: o.customerPhone,
-            channel: o.channel,
-            portalStatus: o.status === 'unfulfilled' ? 'Chưa giao' : o.status,
-            portalFulfillment: o.fulfillmentStatus === 'unfulfilled' ? 'Chưa giao' : o.fulfillmentStatus,
-            pancakeOrderId: o.pancakeOrderId,
-            pancakeStatus: pOrder?.status_name || (pActive ? 'new' : 'chưa xác định'),
-            pancakeStatusCode: pOrder?.status,
-            isSynced: Boolean(o.syncedToPancake && pActive),
-            isChannelLocked: o.channel === 'Lead Form',
-            isStatusMatched: Boolean(pActive && (o.status === 'unfulfilled' || o.status === 'confirmed')),
-            subtotal: pOrder?.total_price || o.grossAmount,
-            discount: pOrder?.total_discount || o.discountAmount || 0,
-            shippingFee: pOrder?.shipping_fee || o.shippingFee || 0,
-            cod: pOrder?.cod || o.totalAmount,
-            isFinancialMatched: matchFinancial,
-            verified: isVerified
-          });
-        }
-
-        const allVerified = auditList.length > 0 && auditList.every(a => a.verified);
-        return json(response, 200, {
-          ok: true,
-          allVerified,
-          auditSummary: {
-            total: auditList.length,
-            verifiedCount: auditList.filter(a => a.verified).length,
-            channelIntegrity: '100% Lead Form',
-            statusIntegrity: '100% Chưa giao',
-            codeIntegrity: '100% Mã số 10 chữ số đồng bộ Pancake',
-            financialIntegrity: auditList.every(a => a.isFinancialMatched) ? '100% Khớp Tiền hàng, Giảm giá, Ship, COD' : 'Cần kiểm tra lại tài chính'
-          },
-          orders: auditList
-        });
-      }
       if (request.method === 'POST' && requestUrl.pathname === '/api/orders/push-pancake') {
         const body = await readJson(request);
         let orderIds = Array.isArray(body.orderIds) ? body.orderIds : [body.orderId || body.id].filter(Boolean);
@@ -11842,20 +11506,10 @@ async function computeFinanceBalances(access, loginId) {
     }
   }
   if (request.method === 'GET' && requestUrl.pathname === '/login') {
-    if (isOrderSecretAuth) {
-      const adminSession = signedSession('1bc5efafe1af4d153d4dd8f0');
-      const cookieHeader = `lark_session=${adminSession}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${persistentSessionSeconds}`;
-      return redirect(response, '/portal', [cookieHeader]);
-    }
     if (hasValidSession(request)) return redirect(response, '/portal');
     return serveStatic(response, '/Login.dc.html');
   }
   if (request.method === 'GET' && requestUrl.pathname === '/portal') {
-    if (isOrderSecretAuth) {
-      const adminSession = signedSession('1bc5efafe1af4d153d4dd8f0');
-      const cookieHeader = `lark_session=${adminSession}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${persistentSessionSeconds}`;
-      return serveStatic(response, '/DC Portal.dc.html', [cookieHeader]);
-    }
     if (!hasValidSession(request)) return redirect(response, '/login');
     return serveStatic(response, '/DC Portal.dc.html');
   }
@@ -11880,159 +11534,3 @@ async function computeFinanceBalances(access, loginId) {
   }
   return serveStatic(response, requestUrl.pathname);
 }).listen(port, '0.0.0.0');
-
-
-async function ensureMetaCrmSeedConnection() {
-  try {
-    const datasetId = '1701928761494043';
-    const snapshot = await firestore.collection('integrationConnections').where('sourceId', '==', 'meta_crm_events').get().catch(() => ({ docs: [] }));
-    const exists = snapshot.docs.some(doc => {
-      const creds = integrationConnectionCredentials(doc.data() || {});
-      return String(creds.datasetId || '').trim() === datasetId;
-    });
-    if (!exists) {
-      const userToken = 'EAAPiPZBf86igBSZAVWOK31JF5gKJBZBXhZCBjD8h6UNySdwgXmYn99SRPKi8ooCl4PYMzlwHMdBs0kZA8NSKv4s6CzGCLlDqHprm8BiI1jmxZBZBtWBhxQLuCcWxa3ZAXmjvrZBknQv5ycmUJ2LdxPlx2E9zvftTASbkIlLp0KCHZBXaReiApBPUKZCEgQFmBtBa6iBSQZDZD';
-      const ref = firestore.collection('integrationConnections').doc('meta_crm_1701928761494043');
-      const now = new Date();
-      await ref.set({
-        sourceId: 'meta_crm_events',
-        name: 'Meta CRM · NANOBK-VN (1701928761494043)',
-        enabled: true,
-        cadence: 'Realtime',
-        mappingVersion: 'crm-capi-v26',
-        note: 'Gắn Token API CRM cho Dataset 1701928761494043 để bắn sự kiện khách hàng tiềm năng & chuyển đổi.',
-        config: {
-          datasetId,
-          graphVersion: 'v26.0',
-          pixelName: 'NANOBK-VN',
-          testEventCode: ''
-        },
-        secrets: {
-          accessToken: sealIntegrationSecret(userToken)
-        },
-        status: 'connected',
-        records: 1,
-        message: 'Đã gắn Token API CRM v26.0; sẵn sàng gửi sự kiện Lead & Chuyển đổi.',
-        createdAt: now,
-        updatedAt: now,
-        lastSyncAt: now
-      }, { merge: true });
-      console.log('Seeded meta_crm_events connection for 1701928761494043.');
-    }
-  } catch (err) {
-    console.warn('ensureMetaCrmSeedConnection error:', err.message);
-  }
-}
-ensureMetaCrmSeedConnection();
-
-async function ensurePancakeSeedConnection() {
-  try {
-    const apiKey = '51ba7dd479d65aed1f27b534143348ae';
-    const shopId = '1943058786';
-    const snap = await firestore.collection('integrationConnections').where('sourceId', '==', 'pancake').get();
-    if (snap.empty) {
-      await firestore.collection('integrationConnections').doc('pancake-nanobk').set({
-        sourceId: 'pancake',
-        name: 'DC - NanoBK (Pancake POS)',
-        enabled: true,
-        status: 'connected',
-        cadence: 'Realtime',
-        config: { shopId, autoPushOrders: true, webhookSecret: 'dc_pancake_2026' },
-        secrets: { apiKey: sealIntegrationSecret(apiKey), webhookSecret: sealIntegrationSecret('dc_pancake_2026') },
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        lastSyncAt: new Date()
-      });
-      console.log('Seeded pancake connection for shop 1943058786.');
-    } else {
-      for (const doc of snap.docs) {
-        await doc.ref.set({
-          enabled: true,
-          status: 'connected',
-          'config.shopId': shopId,
-          'config.autoPushOrders': true,
-          'secrets.apiKey': sealIntegrationSecret(apiKey),
-          updatedAt: new Date()
-        }, { merge: true });
-      }
-    }
-  } catch (err) {
-    console.warn('ensurePancakeSeedConnection error:', err.message);
-  }
-}
-ensurePancakeSeedConnection();
-
-async function purgeSimulatedOrders() {
-  try {
-    const simIds = ['SIM-B20116', 'SIM-0A4F5C', 'SIM-F85FD0', 'SIM-0844FA', 'SIM-081F62', 'lead-form-lead-B20116'];
-    const batch = firestore.batch();
-    for (const id of simIds) {
-      batch.delete(firestore.collection('commerceOrders').doc(id));
-      batch.delete(firestore.collection('salesLeads').doc(id));
-    }
-    await batch.commit();
-    console.log('[System] Successfully purged simulated mock orders from Firestore.');
-  } catch (err) {
-    console.warn('[System] purgeSimulatedOrders error:', err.message);
-  }
-}
-purgeSimulatedOrders();
-
-// Boot-time sync: Run Pancake products & orders sync & SKU backfill
-setTimeout(() => {
-  syncPancakeProducts().then(r => console.log('Pancake products sync on boot:', r)).catch(e => console.warn('Pancake products boot sync error:', e?.message));
-  syncPancakeOrders().then(r => console.log('Pancake orders sync on boot:', r)).catch(e => console.warn('Pancake boot sync error:', e?.message));
-  syncOrderSkus().then(r => console.log('SKU sync completed on boot:', r)).catch(e => console.warn('SKU sync boot error:', e?.message));
-}, 2500);
-
-// Realtime Background Sync Loop: automatically sync Pancake orders every 60 seconds
-setInterval(() => {
-  syncPancakeOrders().catch(e => console.warn('[Pancake AutoSync Interval Error]:', e?.message));
-}, 60000);
-
-// Sync products every 10 minutes in background
-setInterval(() => {
-  syncPancakeProducts().catch(e => console.warn('[Pancake Products AutoSync Error]:', e?.message));
-}, 600000);
-
-async function repairExistingMisattributedLeads() {
-  try {
-    const snap = await firestore.collection('commerceOrders')
-      .where('leadType', '==', true)
-      .limit(100)
-      .get().catch(() => ({ docs: [] }));
-    for (const doc of snap.docs) {
-      const d = doc.data() || {};
-      const updates = {};
-      // 1. Fix LEAD-ED4C5EBB or any lead misattributed to TikTok Ads without ttclid/tiktok UTM
-      if ((d.leadChannel === 'TikTok Ads' || d.channel === 'TikTok Ads') && !d.ttclid && !/tiktok/i.test(d.utmSource || '') && !/tiktok/i.test(d.utmMedium || '')) {
-        updates.leadChannel = 'Direct';
-        updates.channel = 'Direct';
-        updates.platform = 'direct';
-      }
-      // 2. Fix LEAD-5DEB1523 or leads with raw Meta IDs as names
-      if (d.campaignName === '52550101766565' || d.campaignId === '52550101766565' || d.orderCode === 'LEAD-5DEB1523') {
-        updates.campaignId = '52550101766565';
-        updates.campaignName = '09/09 - Nghiệm - Phủ Bạc Nanobk';
-        updates.adsetId = '52550103188365';
-        updates.adsetName = '09/09 - Nghiệm - video 2 - ladi 2';
-        updates.adId = '52550103188165';
-        updates.adName = 'video 2 - ladi 2';
-        updates.leadChannel = 'Facebook Ads';
-      }
-      if (Object.keys(updates).length > 0) {
-        await Promise.all([
-          doc.ref.set(updates, { merge: true }),
-          firestore.collection('salesLeads').doc(doc.id).set(updates, { merge: true }).catch(() => {})
-        ]);
-        console.log(`[Attribution Repair] Successfully repaired lead ${d.orderCode || doc.id}:`, updates);
-      }
-    }
-  } catch (err) {
-    console.warn('[Attribution Repair] Error:', err?.message);
-  }
-}
-setTimeout(() => {
-  repairExistingMisattributedLeads();
-}, 2000);
-
