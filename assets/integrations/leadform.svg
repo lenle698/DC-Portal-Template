@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="leadformGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF7A1A"/>
+      <stop offset="100%" stop-color="#C95C10"/>
+    </linearGradient>
+    <filter id="leadformShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <rect width="48" height="48" rx="12" fill="url(#leadformGrad)"/>
+  <!-- Clipboard / Form Body -->
+  <rect x="12" y="11" width="24" height="28" rx="4" fill="#FFFFFF" filter="url(#leadformShadow)"/>
+  <!-- Clip -->
+  <rect x="18" y="8" width="12" height="6" rx="2" fill="#E28100"/>
+  <rect x="20" y="7" width="8" height="4" rx="2" fill="#FFE0B2"/>
+  <!-- Form Lines -->
+  <rect x="16" y="18" width="10" height="2.5" rx="1.25" fill="#FF7A1A"/>
+  <rect x="16" y="23" width="16" height="2" rx="1" fill="#CBD5E1"/>
+  <rect x="16" y="27" width="16" height="2" rx="1" fill="#CBD5E1"/>
+  <rect x="16" y="31" width="12" height="2" rx="1" fill="#CBD5E1"/>
+  <!-- Sparkle badge / checkmark -->
+  <circle cx="30" cy="34" r="5" fill="#16A34A"/>
+  <path d="M28 34l1.5 1.5 3-3" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

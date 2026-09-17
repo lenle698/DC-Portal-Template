@@ -1,0 +1,10 @@
+.git
+.gitignore
+node_modules
+scratch
+screenshots
+uploads
+_reference_order_shopify
+__pycache__
+*-check*.png
+*.xlsx

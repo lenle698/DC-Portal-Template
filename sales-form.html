@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Đặt hàng | DC Vietnam</title>
+  <link rel="icon" href="/assets/dc-logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box}:root{--accent:#F47920;--ink:#09090B;--muted:#71717A;--line:#E4E4E7}
+    html,body{margin:0;min-height:100%;font-family:'Be Vietnam Pro',system-ui,sans-serif;color:var(--ink);background:#F4F4F5;overscroll-behavior:contain}button,input,select,textarea{font:inherit}button{cursor:pointer}
+    .shell{min-height:100vh;display:flex;justify-content:center;padding:20px 14px 34px}.stage{width:min(400px,100%)}.icon-svg{width:19px;height:19px;display:block;flex:0 0 auto}
+    .progress{background:#fff;border:1px solid var(--line);border-radius:8px;padding:11px 12px;margin-bottom:10px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.progress-item{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;color:#8A8A93;font-size:9.5px;white-space:nowrap}.progress-item:not(:last-child):before{content:'';position:absolute;left:50%;top:13px;width:100%;height:2px;background:#E4E4E7}.progress-item.active{color:#09090B;font-weight:700}.progress-dot{position:relative;z-index:1;width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:#F4F4F5;color:#A1A1AA;font-size:11px;font-weight:800}.progress-item.active .progress-dot,.progress-item.done .progress-dot{background:var(--accent);color:#fff}.progress-item.done:not(:last-child):before{background:var(--accent)}
+    .sales{display:flex;flex-direction:column;gap:8px}.timer{background:#18181B;color:#fff;border-radius:6px;padding:10px 12px;display:flex;align-items:center;gap:9px}.timer strong{font-size:12px}.timer small{display:block;font-size:10px;opacity:.8;margin-top:2px}.clock{display:flex;gap:4px;margin-left:auto}.clock span{background:rgba(0,0,0,.28);border-radius:6px;padding:5px 7px;font-size:14px;font-weight:800}.stock,.voucher,.proof{background:#fff;border:1px solid var(--line);border-radius:6px;padding:11px 13px}.stock-top{display:flex;font-size:11.5px;font-weight:600;margin-bottom:7px}.stock-top b{margin-left:auto;color:var(--accent)}.bar{height:6px;border-radius:6px;background:#F4F4F5;overflow:hidden}.bar i{display:block;width:66%;height:100%;background:var(--accent);border-radius:inherit}
+    .combos{display:flex;gap:7px}.combo{position:relative;flex:1;min-width:0;border:1px solid var(--line);border-radius:6px;background:#fff;padding:10px 7px;text-align:center;color:#09090B}.combo.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,white);color:var(--accent)}.combo strong{display:block;font-size:12.5px}.combo b{display:block;font-size:13.5px;margin-top:4px}.combo small{display:block;font-size:10.5px;color:#A1A1AA;text-decoration:line-through;margin-top:2px}.combo-radios{display:flex;flex-direction:column;gap:5px}.combo-radios .combo-radio{display:flex!important;width:100%;align-items:center;gap:9px;border:1px solid var(--line);border-radius:6px;padding:7px 10px!important;cursor:pointer;background:#fff;font-size:11.5px!important;margin:0!important;line-height:1.3;min-height:34px!important;height:auto!important;text-align:left;color:#18181B}.combo-radios .combo-radio:hover{border-color:#FDBA74;background:#FFF7ED}.combo-radios .combo-radio.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,white)}.combo-radio-dot{width:15px;height:15px;border:1.5px solid #A1A1AA;border-radius:50%;flex:none;background:#fff}.combo-radio.active .combo-radio-dot{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 3.5px #fff}.combo-radio-name{flex:1;min-width:0;color:#18181B;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.combo-radio-name small{color:#16A34A;font-weight:600;margin-left:6px;font-size:10px}.combo-radio-name small.combo-radio-ship{display:block;margin:2px 0 0;color:#16A34A}.combo-radio-name small.combo-radio-ship.fee{color:#B45309}.combo-radio-price{display:flex;flex-direction:column;align-items:flex-end;color:var(--accent);white-space:nowrap}.combo-radio-price small{font-size:9px;font-weight:600;color:#71717A}.combo-radio-price b{font-size:12px;font-weight:800;color:var(--accent)}.shipbar{display:flex;align-items:center;gap:9px;background:#FFFBEB;border:1px solid #FCD34D;border-radius:6px;padding:10px 12px;color:#B45309;font-size:11.5px;font-weight:600}.voucher-row{display:flex;gap:7px}.voucher-row input{flex:1;min-width:0;height:36px;border:1px dashed #D4D4D8;border-radius:6px;padding:0 11px;font-size:12px}.voucher-row button{border:0;border-radius:6px;background:var(--accent);color:#fff;padding:0 14px;font-size:11.5px;font-weight:700}.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.chips button{border:1px solid var(--line);border-radius:18px;background:#fff;padding:5px 9px;color:#52525B;font-size:9.5px}.voucher-message{margin-top:8px;padding:7px 9px;border-radius:6px;font-size:10.5px;font-weight:600}.voucher-message.ok{color:#166534;background:#F0FDF4;border:1px solid #BBF7D0}.voucher-message.bad{color:#B91C1C;background:#FEF2F2;border:1px solid #FECACA}.proof{display:flex;align-items:center;gap:9px;font-size:11.5px;color:#52525B}.proof .avatar{width:26px;height:26px;border-radius:50%;background:#F4F4F5;display:grid;place-items:center;font-weight:700}.proof .verified{margin-left:auto;color:#16A34A}.continue{width:100%;min-height:58px;border:0;border-radius:8px;background:var(--accent);color:#fff;padding:10px 13px;display:flex;align-items:center;gap:10px;text-align:left}.continue strong{display:block;font-size:13px}.continue small{display:block;font-size:10.5px;opacity:.82;margin-top:2px}.continue .chevron{margin-left:auto}.trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.trust-item{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:9px 11px;font-size:11px;font-weight:600;color:#52525B;line-height:1.35}.trust-item .icon-svg{color:var(--accent)}
+    .modal{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;padding:18px;overflow:hidden;touch-action:none;background:rgba(9,9,11,.54);backdrop-filter:blur(4px)}.modal.open{display:flex}.modal.plain-mode{position:static;display:block;inset:auto;padding:0;overflow:visible;background:transparent;backdrop-filter:none;touch-action:auto}.dialog{position:relative;width:min(520px,100%);max-height:calc(100dvh - 36px);overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;scrollbar-gutter:stable;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 24px 80px rgba(9,9,11,.3)}.modal.plain-mode .dialog{width:min(520px,100%);max-height:none;margin:0 auto;overflow:visible;box-shadow:0 8px 28px rgba(9,9,11,.08)}
+    .modal.embed-flow{position:static;display:block;inset:auto;padding:0;overflow:visible;background:transparent;backdrop-filter:none;touch-action:auto}
+    .modal.embed-flow .dialog{width:100%;max-width:100%;max-height:none;margin:0 auto;overflow:visible;box-shadow:none;border:0;border-radius:0}
+    .modal.embed-flow .close{float:none;left:auto;top:0;margin:0;width:100%;height:36px;border:0;border-bottom:1px solid var(--line);border-radius:0;display:flex;align-items:center;justify-content:flex-start;padding:0 12px;background:#fff;color:#52525B;font-size:11.5px;font-weight:600;box-shadow:none}
+    html.embedded,html.embedded body{height:auto;min-height:0;background:transparent;overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch;overscroll-behavior-y:auto}
+    html.embedded .modal.embed-flow{min-height:100%;width:100%}
+    html,body{overflow-x:hidden}.dialog{max-width:100vw}.close{position:sticky;z-index:4;float:right;top:12px;margin:12px 12px -48px 0;width:36px;height:36px;border:1px solid #D4D4D8;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:20px;color:#3F3F46}.popup-progress{padding:14px 52px 12px 18px;margin:0;border:0;border-bottom:1px solid var(--line);border-radius:0}.page{display:none}.page.active{display:block}.form-head{background:#18181B;color:#FAFAFA;padding:18px 58px 18px 18px}.modal.plain-mode .form-head{padding:18px}.form-head .eyebrow{font-size:11px;font-weight:700;letter-spacing:1.2px;opacity:.85}.form-head h1{font-size:20px;margin:6px 0 0}.form-head p{font-size:13px;opacity:.9;margin:4px 0 0}.form-body{padding:14px;display:flex;flex-direction:column;gap:11px}.field label,.group-label{display:block;font-size:11.5px;font-weight:600;color:#52525B;margin-bottom:5px}.field input,.field textarea,.field select{width:100%;height:42px;border:1px solid var(--line);border-radius:6px;padding:0 12px;font-size:13px;background:#fff;outline:0}.field textarea{height:78px;padding:11px 12px;resize:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}.phone{display:flex;align-items:center;border:1px solid var(--line);border-radius:6px;overflow:hidden}.phone span{padding:0 12px;height:44px;display:flex;align-items:center;border-right:1px solid #F4F4F5;color:#71717A;font-size:13.5px;font-weight:600}.phone input{flex:1;border:0;height:44px}.identity-grid,.address-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.options{display:flex;flex-direction:column;gap:7px}.option{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:6px;background:#fff;text-align:left}.option.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,white)}.option .icon{color:#A1A1AA}.option.active .icon{color:var(--accent)}.option strong{display:block;font-size:12.5px}.option small{display:block;color:#71717A;font-size:11px;margin-top:2px}.option .check{margin-left:auto;color:#D4D4D8}.option.active .check{color:var(--accent)}.ship-options{display:flex;gap:8px}.ship-option{flex:1;border:1px solid var(--line);border-radius:6px;background:#fff;padding:10px 7px;color:#52525B;font-size:12px;font-weight:600}.ship-option.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,white);color:var(--accent)}.ship-option small{display:block;font-size:10.5px;margin-top:3px;opacity:.78}.summary{border-top:1px dashed var(--line);padding-top:11px}.summary-row{display:flex;gap:12px;padding:4px 0;font-size:12.5px}.summary-row span{color:#71717A}.summary-row b{margin-left:auto;text-align:right}.total{display:flex;align-items:baseline;border-top:1px solid #F4F4F5;margin-top:6px;padding-top:10px}.total strong{font-size:13.5px}.total b{margin-left:auto;font-size:19px;color:var(--accent)}.primary{width:100%;height:48px;border:0;border-radius:6px;background:var(--accent);color:#fff;font-size:13.5px;font-weight:700}.legal{text-align:center;color:#A1A1AA;font-size:11px;line-height:1.55}.error{display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:6px;padding:10px 12px;color:#B91C1C;font-size:11.5px}.error.show{display:block}
+    .address-autocomplete{position:relative}.address-autocomplete input{padding-right:38px}.address-autocomplete .search-mark{position:absolute;right:12px;top:20px;height:42px;display:flex;align-items:center;justify-content:center;color:#A1A1AA;font-size:16px;pointer-events:none}.address-suggestions{position:absolute;z-index:20;left:0;right:0;top:66px;display:none;max-height:250px;overflow:auto;background:#fff;border:1px solid #D4D4D8;border-radius:8px;box-shadow:0 14px 35px rgba(9,9,11,.18)}.address-suggestions.open{display:block}.address-suggestion{display:block;width:100%;border:0;border-bottom:1px solid #F4F4F5;background:#fff;padding:10px 12px;text-align:left;color:#27272A;font-size:11.5px;line-height:1.45}.address-suggestion:hover,.address-suggestion:focus{background:#FFF7ED}.address-suggestion:last-child{border-bottom:0}.address-hint{font-size:10px;color:#8A8A93;margin-top:5px;line-height:1.45}.address-hint.ok{color:#15803D}.checkout-head{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:11px}.back{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:#fff}.checkout-head strong{display:block;font-size:15px}.checkout-head small{display:block;color:#71717A;font-size:11px;margin-top:2px}.checkout-body{padding:17px;display:flex;flex-direction:column;gap:14px}.checkout-card{border:1px solid var(--line);border-radius:7px;padding:13px 14px}.checkout-card h2{font-size:12.5px;margin:0 0 8px}.payment-box{padding:18px;text-align:center}.qr{width:150px;height:150px;margin:10px auto 16px;border:8px solid #fff;outline:1px solid var(--line);border-radius:8px;background:repeating-linear-gradient(45deg,#18181B 0 7px,#fff 7px 14px);display:grid;place-items:center}.qr b{background:#fff;border-radius:50%;padding:14px 7px;color:#16237A;font-size:10px}.success{text-align:center;padding:38px 28px}.success-icon{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;margin:0 auto 16px;background:#F0FDF4;color:#16A34A;font-size:32px}.success h2{font-size:19px;margin:0 0 8px}.success p{font-size:12.5px;color:#71717A;line-height:1.6;margin:0}.hp{position:absolute!important;left:-9999px!important;opacity:0!important}
+    .modal.plain-mode.compact-mode .dialog{width:min(380px,100%)}.modal.plain-mode.compact-mode .form-head{padding:13px 14px}.modal.plain-mode.compact-mode .form-head .eyebrow{font-size:9px}.modal.plain-mode.compact-mode .form-head h1{font-size:16px;margin-top:3px}.modal.plain-mode.compact-mode .form-head p{font-size:11px}.modal.plain-mode.compact-mode .form-body{padding:11px;gap:8px}.modal.plain-mode.compact-mode .field label{font-size:10px;margin-bottom:3px}.modal.plain-mode.compact-mode .field input,.modal.plain-mode.compact-mode .field select{height:36px;font-size:11.5px}.modal.plain-mode.compact-mode .phone span,.modal.plain-mode.compact-mode .phone input{height:36px;font-size:11.5px}.modal.plain-mode.compact-mode .field textarea{height:58px;font-size:11.5px}.modal.plain-mode.compact-mode .address-grid{gap:8px}.modal.plain-mode.compact-mode .address-hint{font-size:9px}.modal.plain-mode.compact-mode .primary{height:40px;font-size:12px}.modal.plain-mode.compact-mode .legal{font-size:9px}
+    .loading{text-align:center;padding:60px 20px;color:#71717A;font-size:13px}.spinner{width:28px;height:28px;border:3px solid #E4E4E7;border-top-color:#F47920;border-radius:50%;margin:0 auto 12px;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    .preview-section{position:relative}.preview-section-control{position:absolute;z-index:8;top:50%;right:-26px;transform:translateY(-50%);width:26px;height:28px;border:1px solid transparent;border-radius:0 7px 7px 0;background:transparent;color:#64748B;display:grid;place-items:center;padding:0;font-size:17px;font-weight:800;line-height:1;box-shadow:none;opacity:0;pointer-events:none;transition:opacity .12s ease,background .12s ease,border-color .12s ease,color .12s ease,box-shadow .12s ease}.preview-section:hover>.preview-section-control,.preview-section:focus-within>.preview-section-control,.preview-section-control:focus-visible{opacity:1;pointer-events:auto;background:#fff;border-color:#CBD5E1;box-shadow:0 2px 8px rgba(15,23,42,.12)}.preview-section-control:hover,.preview-section-control:focus-visible{border-color:#FB923C;background:#FFF7ED;color:var(--accent);outline:0;box-shadow:0 3px 10px rgba(249,115,22,.18)}
+    html.preview-editor .shell{justify-content:flex-start;padding-left:8px;padding-right:32px}
+    @media(max-width:480px){.shell{padding:6px 5px 14px}.modal{padding:5px}.dialog{width:100%;max-height:calc(100vh - 10px)}.identity-grid,.address-grid{gap:8px}.popup-progress{padding-left:10px;padding-right:48px}.form-head{padding-left:14px}.form-body,.checkout-body{padding:10px}.form-body{gap:8px}.field label,.group-label{font-size:11px;margin-bottom:4px}.field input,.field select{height:40px;padding:0 10px;font-size:12px}.field textarea{height:56px;padding:9px 10px;font-size:12px}.phone span,.phone input{height:40px}.phone span{padding:0 9px;font-size:12px}.address-autocomplete input{padding-right:34px}.address-autocomplete .search-mark{right:10px;top:18px;height:40px}.address-suggestions{top:62px}.address-hint{font-size:9px;margin-top:3px;line-height:1.35}.primary{height:44px;font-size:13px}.legal{font-size:9.5px;line-height:1.4}}
+    @media(max-width:350px){.identity-grid,.address-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="shell"><section class="stage" id="stage"><div class="loading"><div class="spinner"></div>Đang tải form bán hàng...</div></section></main>
+  <div class="modal" id="modal" role="dialog" aria-modal="true"></div>
+  <script>
+    const GEO={
+      'TP. Hồ Chí Minh':{'Quận 1':['Bến Nghé','Bến Thành','Đa Kao','Nguyễn Thái Bình'],'Quận 3':['Võ Thị Sáu','Phường 1','Phường 4'],'Quận 7':['Tân Phú','Phú Mỹ','Tân Phong'],'Bình Thạnh':['Phường 12','Phường 25','Phường 26'],'Thủ Đức':['Linh Trung','Hiệp Bình Chánh','Trường Thọ']},
+      'Hà Nội':{'Ba Đình':['Cống Vị','Ngọc Hà','Giảng Võ'],'Cầu Giấy':['Dịch Vọng','Mai Dịch','Trung Hòa'],'Đống Đa':['Khâm Thiên','Trung Liệt','Ô Chợ Dừa'],'Hoàng Mai':['Định Công','Đại Kim','Vĩnh Hưng']},
+      'Đà Nẵng':{'Hải Châu':['Hòa Cường Bắc','Thanh Bình','Nam Dương'],'Thanh Khê':['An Khê','Xuân Hà','Chính Gián'],'Ngũ Hành Sơn':['Mỹ An','Khuê Mỹ','Hòa Hải']},
+      'Bình Dương':{'Thủ Dầu Một':['Phú Cường','Chánh Nghĩa','Hiệp Thành'],'Dĩ An':['An Bình','Tân Đông Hiệp','Đông Hòa']},
+      'Cần Thơ':{'Ninh Kiều':['An Hội','Tân An','Xuân Khánh'],'Bình Thủy':['An Thới','Bùi Hữu Nghĩa','Trà Nóc']},
+      'Hải Phòng':{'Lê Chân':['An Biên','Cát Dài','Hồ Nam'],'Ngô Quyền':['Máy Tơ','Lạch Tray','Đông Khê']}
+    };
+    const SHIPS=[{id:'std',label:'Tiêu chuẩn',fee:25000},{id:'fast',label:'Nhanh',fee:45000},{id:'exp',label:'Hỏa tốc',fee:79000}];
+    const slug=decodeURIComponent(location.pathname.split('/').filter(Boolean).pop()||''),stage=document.getElementById('stage'),modal=document.getElementById('modal'),previewMode=new URLSearchParams(location.search).get('preview')==='1';
+    if(previewMode)document.documentElement.classList.add('preview-editor');
+    const embedded=(()=>{try{return window.parent!==window;}catch(e){return true;}})();
+    if(embedded)document.documentElement.classList.add('embedded');
+    const API_ORIGIN=(location.protocol.startsWith('http')&&location.origin)?location.origin:'';
+    const state={form:null,config:{},comboIndex:0,pay:'cod',ship:'std',step:1,province:'',district:'',ward:'',provinces:[],districts:[],wards:[],voucher:'',voucherApplied:'',voucherMessage:'',submitting:false,orderCode:'',selectedAddress:null,addressTimer:null,addressRequest:0,pixelEvent:'Purchase',pixelCheckoutTracked:false,pixelSuccessTracked:false};
+    let parentTracking = {};
+    function applyTrackingData(data) {
+      if (!data || typeof data !== 'object') return;
+      parentTracking = { ...parentTracking, ...data };
+    }
+    window.addEventListener('message', event => {
+      if (!event.data) return;
+      if (event.data.type === 'dc-sales-form:init-tracking') {
+        applyTrackingData(event.data);
+      }
+    });
+    if (embedded) {
+      try { window.parent.postMessage({ type: 'dc-sales-form:request-tracking' }, '*'); } catch(e){}
+    }
+    let activePixelId='';
+    const isPlainTemplate=()=>['plain','plain_compact'].includes(state.form?.template);
+    const money=value=>new Intl.NumberFormat('vi-VN').format(Number(value)||0)+'₫';
+    const safe=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+    const browserCookie=name=>{const prefix=`${name}=`;const part=String(document.cookie||'').split(';').map(value=>value.trim()).find(value=>value.startsWith(prefix));return part?decodeURIComponent(part.slice(prefix.length)):'';};
+    function installMetaPixel(rawId){
+      if(previewMode)return;
+      const pixelId=String(rawId||'').trim();
+      if(!/^\d{10,20}$/.test(pixelId)||activePixelId===pixelId)return;
+      activePixelId=pixelId;
+      if(parentTracking&&parentTracking.hasParentFb)return;
+      if(!window.fbq){const fbq=window.fbq=function(){fbq.callMethod?fbq.callMethod.apply(fbq,arguments):fbq.queue.push(arguments)};if(!window._fbq)window._fbq=fbq;fbq.push=fbq;fbq.loaded=true;fbq.version='2.0';fbq.queue=[];const script=document.createElement('script');script.async=true;script.src='https://connect.facebook.net/en_US/fbevents.js';document.head.appendChild(script);}
+      window.fbq('init',pixelId);
+      window.fbq('trackSingle',pixelId,'PageView');
+    }
+    function trackMetaEvent(eventName,parameters={},options){if(previewMode||!activePixelId||typeof window.fbq!=='function')return;window.fbq('trackSingle',activePixelId,eventName,parameters,options||{});}
+    function trackCheckoutStart(){
+      if(state.pixelCheckoutTracked)return;
+      state.pixelCheckoutTracked=true;
+      if(embedded){
+        try{window.parent.postMessage({type:'dc-sales-form:checkout-start',slug,productName:productName(),productId:state.form?.productId||state.form?.slug||slug,value:grandTotal(),currency:'VND',quantity:qty()},'*');}catch(e){}
+      }
+      if(!parentTracking.hasParentFb&&activePixelId){
+        trackMetaEvent('InitiateCheckout',{content_name:productName(),content_ids:[state.form?.productId||state.form?.slug||slug],content_type:'product',value:grandTotal(),currency:'VND',num_items:qty()});
+      }
+    }
+    const ICONS={shopping_bag:'<path d="M7 8V6a5 5 0 0 1 10 0v2M5 8h14l-1 12H6L5 8Z"/>',person:'<circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-4 3-6 7-6s6.3 2 7 6"/>',receipt_long:'<path d="M7 3h10v18l-2-1.4L13 21l-2-1.4L9 21l-2-1.4L5 21V5a2 2 0 0 1 2-2Z"/><path d="M9 8h6M9 12h6M9 16h4"/>',payments:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><circle cx="12" cy="14" r="2"/>',check:'<path d="m5 12 4 4L19 6"/>',bolt:'<path d="m13 2-8 12h6l-1 8 9-13h-6V2Z"/>',local_shipping:'<path d="M3 6h11v10H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',verified:'<circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16.5 8"/>',arrow_forward:'<path d="M5 12h14M14 7l5 5-5 5"/>',chevron_right:'<path d="m9 6 6 6-6 6"/>',inventory:'<path d="m4 7 8-4 8 4v10l-8 4-8-4V7Z"/><path d="m4 7 8 4 8-4M12 11v10"/>',autorenew:'<path d="M20 7h-5V2M4 17h5v5M19 12a7 7 0 0 0-12-5L4 10M5 12a7 7 0 0 0 12 5l3-3"/>',verified_user:'<path d="M12 3 5 6v5c0 5 3 8 7 10 4-2 7-5 7-10V6l-7-3Z"/><path d="m8.5 12 2 2 4.5-5"/>',support_agent:'<circle cx="12" cy="12" r="8"/><path d="M4 12h3v5H5a1 1 0 0 1-1-1v-4Zm16 0h-3v5h2a1 1 0 0 0 1-1v-4ZM9 19h6"/>'};
+    const icon=(name,size=19)=>`<svg class="icon-svg" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||ICONS.check}</svg>`;
+    const content=()=>state.config.content||{},fields=()=>({...state.form.fields,...(state.config.fields||{})}),sales=()=>({...state.form.sales,...(state.config.sales||{})});
+    const productName=()=>content().productName||state.form.productName||'Sản phẩm';
+    const combo=()=>state.form.combos?.[state.comboIndex]||null,qty=()=>Math.max(1,Number(combo()?.qty)||1),baseSubtotal=()=>Number(state.form.price)*qty()||0,productTotal=()=>Number(combo()?.price)||baseSubtotal(),bundleDiscount=()=>Math.max(0,baseSubtotal()-productTotal());
+    const discountCodes=()=>{const list=Array.isArray(state.form.discountCodes)?state.form.discountCodes:[];return list.length?list:[{code:'DC50',type:'amount',value:50000},{code:'DC10',type:'percent',value:10},{code:'FREESHIP',type:'freeship',value:0}];};
+    const matchVoucher=code=>discountCodes().find(item=>String(item.code||'').toUpperCase()===String(code||'').toUpperCase())||null;
+    const voucherDiscount=()=>{const m=matchVoucher(state.voucherApplied);if(!m)return 0;if(m.type==='amount')return Math.min(Number(m.value)||0,productTotal());if(m.type==='percent')return Math.round(productTotal()*Math.min(100,Number(m.value)||0)/100);return 0;};
+    const voucherFreeship=()=>{const m=matchVoucher(state.voucherApplied);return !!m&&m.type==='freeship';};
+    const freeShipFrom=()=>Number(state.form.freeShipFrom)||Number(content().freeFrom)||0;
+    const shipMethods=()=>{const list=Array.isArray(state.form.shipMethods)?state.form.shipMethods:[];return list.length?list:SHIPS;};
+    const shipFeeFor=id=>{const m=shipMethods().find(item=>item.id===id);return m?Number(m.fee)||0:0;};
+    const netProductTotal=()=>Math.max(0,productTotal()-voucherDiscount());
+    const comboFreeship=()=>!!(combo()&&combo().freeship);
+    const comboShippingFee=()=>{const selected=combo();if(!selected||selected.shippingFee===undefined||selected.shippingFee===null||selected.shippingFee==='')return null;return Math.max(0,Number(selected.shippingFee)||0);};
+    const hasComboShipping=()=>comboFreeship()||comboShippingFee()!==null;
+    const shipFee=()=>{if(comboFreeship())return 0;const comboFee=comboShippingFee();if(comboFee!==null)return comboFee;if(fields().ship===false)return 0;const methods=shipMethods(),selectedIndex=Math.max(0,methods.findIndex(item=>item.id===state.ship)),base=shipFeeFor(state.ship),standard=selectedIndex===0;if(standard&&voucherFreeship())return 0;if(standard&&freeShipFrom()>0&&netProductTotal()>=freeShipFrom())return 0;return base;};
+    const grandTotal=()=>netProductTotal()+shipFee();
+    const address=()=>[modal.querySelector('[name="street"]')?.value||modal.querySelector('[name="addressSearch"]')?.value,state.ward,state.district,state.province].filter(Boolean).join(', ');
+    function notifyEmbedHeight(){
+      if(window.parent===window)return;
+      requestAnimationFrame(()=>{const isOpen=modal.classList.contains('open'),plain=modal.classList.contains('plain-mode'),embedFlow=modal.classList.contains('embed-flow')&&isOpen;let contentHeight,modalOpen=false;if(plain){contentHeight=Math.max(state.form?.template==='plain_compact'?340:440,modal.scrollHeight+24);}else if(embedFlow){contentHeight=Math.max(480,modal.scrollHeight+28);modalOpen=false;}else if(isOpen){contentHeight=Math.max(700,window.innerHeight);modalOpen=true;}else{contentHeight=Math.max(320,stage.scrollHeight+34);}window.parent.postMessage({type:'dc-sales-form:resize',slug,height:Math.min(2600,Math.ceil(contentHeight)),modalOpen},'*')});
+    }
+    function hydrateForm(form){const shell=stage.closest('.shell');modal.classList.remove('open','embed-flow','plain-mode','compact-mode');if(shell)shell.style.display='';state.form=form;state.config=form.templateConfigs?.[form.template]||{};const configuredDefault=(Array.isArray(form.combos)?form.combos:[]).findIndex(item=>item?.isDefault===true);state.comboIndex=configuredDefault>=0?configuredDefault:0;state.ship=(shipMethods()[0]||{}).id||state.ship;state.step=1;state.pixelEvent=['Purchase','Lead','CompleteRegistration','Contact'].includes(form.pixelEvent)?form.pixelEvent:'Purchase';state.pixelCheckoutTracked=false;state.pixelSuccessTracked=false;document.title=(form.name||'Đặt hàng')+' | DC Vietnam';document.documentElement.style.setProperty('--accent',form.accentColor||'#F47920');installMetaPixel(form.pixelId);renderLanding();renderModal();mountPlainForm();if(!isPlainTemplate()&&new URLSearchParams(location.search).get('open')==='1')openModal();}
+    async function boot(){if(previewMode){stage.innerHTML='<div class="loading"><div class="spinner"></div>Đang đồng bộ bản thiết kế...</div>';window.parent.postMessage({type:'dc-sales-form:preview-ready'},location.origin);return}try{const response=await fetch(`${API_ORIGIN}/api/public/sales-forms/`+encodeURIComponent(slug),{cache:'no-store'}),data=await response.json();if(!response.ok)throw new Error(data.error||'Không tìm thấy form.');hydrateForm(data.form);}catch(error){stage.innerHTML='<div class="loading"><strong>Form chưa sẵn sàng</strong><div style="margin-top:8px">'+safe(error.message)+'</div></div>';}}
+    function progressHtml(active=1){return'';}
+    function previewDots(section,label){return previewMode?`<button class="preview-section-control" type="button" data-preview-section="${safe(section)}" title="Cấu hình ${safe(label)}" aria-label="Cấu hình ${safe(label)}">⋮</button>`:'';}
+    function renderLanding(){
+      const c=content(),s=sales();
+      const combos=(state.form.combos||[]).map((item,index)=>`<button class="combo ${index===state.comboIndex?'active':''}" data-combo="${index}" type="button"><strong>${safe(item.name)}</strong><b>${money(item.price||Number(state.form.price)*(Number(item.qty)||1))}</b>${Number(item.qty)>1?`<small>${money(Number(state.form.price)*(Number(item.qty)||1))}</small>`:''}</button>`).join('');
+      const proof=(c.proof||'Chị Lan · Quận 7, TP.HCM · 2').split('\n')[0].split(' · ');
+      const trust=(c.trust||'Kiểm tra hàng trước khi trả tiền\nĐổi trả miễn phí trong 7 ngày\nHàng chính hãng 100%\nHotline 1900 6035 · 8h–21h').split('\n').filter(Boolean),trustIcons=['inventory','autorenew','verified_user','support_agent'];
+      const voucherBlock=s.voucher!==false?`<div class="voucher"><div class="voucher-row"><input id="voucher-input" value="${safe(state.voucher)}" placeholder="NHẬP MÃ GIẢM GIÁ"><button id="apply-voucher" type="button">Áp dụng</button></div><div class="chips">${discountCodes().map(v=>{const label=v.type==='amount'?('Giảm '+money(v.value)):v.type==='percent'?('Giảm '+v.value+'%'):'Miễn phí vận chuyển';return '<button type="button" data-voucher="'+safe(v.code)+'">'+safe(v.code)+' · '+label+'</button>'}).join('')}</div>${state.voucherMessage?`<div class="voucher-message ${state.voucherApplied?'ok':'bad'}">${safe(state.voucherMessage)}</div>`:''}</div>`:'';
+      stage.innerHTML=`${progressHtml(1)}<div class="sales">${s.timer!==false?`<div class="timer preview-section">${previewDots('timer','đồng hồ đếm ngược')}${icon('bolt')}<div><strong>${safe(c.timerLabel||'FLASH SALE')} ${safe(c.offerText||'· giảm đến 20%')}</strong><small>Kết thúc sau</small></div><div class="clock"><span>01</span><span>52</span><span>20</span></div></div>`:''}${s.stock!==false?`<div class="stock preview-section">${previewDots('stock','suất ưu đãi')}<div class="stock-top"><span>${safe(String(c.stockLabelTpl||'Đã bán {sold} suất giá ưu đãi').replace('{sold}','33'))}</span><b>Còn 17</b></div><div class="bar"><i></i></div></div>`:''}${s.bundle!==false&&combos?`<div class="combos preview-section">${previewDots('bundle','combo mua nhiều')}${combos}</div>`:''}${s.shipbar!==false?`<div class="shipbar preview-section">${previewDots('shipbar','mốc miễn phí vận chuyển')}${icon('local_shipping')}<span>${(()=>{const ff=freeShipFrom();if(ff<=0)return 'Miễn phí vận chuyển toàn quốc';return netProductTotal()>=ff?'Đơn hàng được miễn phí vận chuyển':('Thêm '+money(Math.max(0,ff-netProductTotal()))+' để được miễn phí vận chuyển')})()}</span></div>`:''}${s.voucher!==false?`<div class="preview-section">${previewDots('voucher','mã giảm giá')}${voucherBlock}</div>`:''}${s.proof!==false?`<div class="proof preview-section">${previewDots('proof','khách vừa mua')}<span class="avatar">${safe((proof[0]||'K').trim()[0])}</span><div>${safe((proof[0]||'Khách hàng')+' · '+(proof[1]||'vừa đặt hàng'))}</div><span class="verified">${icon('verified',16)}</span></div>`:''}<button class="continue" id="continue" type="button">${icon('arrow_forward')}<span><strong>Tiếp tục đặt hàng</strong><small>Sang bước nhập thông tin nhận hàng</small></span><span class="chevron">${icon('chevron_right')}</span></button></div>${s.trust!==false?`<div class="trust-grid preview-section">${previewDots('trust','cam kết và bảo đảm')}${trust.map((item,index)=>`<div class="trust-item">${icon(trustIcons[index%trustIcons.length])}${safe(item)}</div>`).join('')}</div>`:''}`;
+      stage.querySelector('#continue').addEventListener('click',openModal);
+      stage.querySelectorAll('[data-combo]').forEach(button=>button.addEventListener('click',()=>{state.comboIndex=Number(button.dataset.combo)||0;renderLanding();renderModal()}));
+      const voucherInput=stage.querySelector('#voucher-input');
+      if(voucherInput)voucherInput.addEventListener('input',event=>{state.voucher=event.target.value.toUpperCase()});
+      stage.querySelector('#apply-voucher')?.addEventListener('click',()=>applyVoucher(state.voucher));
+      stage.querySelectorAll('[data-voucher]').forEach(button=>button.addEventListener('click',()=>applyVoucher(button.dataset.voucher)));
+      stage.querySelectorAll('[data-preview-section]').forEach(button=>button.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();window.parent.postMessage({type:'dc-sales-form:edit-section',section:button.dataset.previewSection},location.origin)}));
+      notifyEmbedHeight();
+    }
+    function applyVoucher(rawCode){
+      const code=String(rawCode||'').trim().toUpperCase();
+      state.voucher=code;
+      const m=matchVoucher(code);
+      if(!m){state.voucherApplied='';state.voucherMessage=code?'Mã giảm giá không hợp lệ.':'Vui lòng nhập mã giảm giá.';}
+      else{state.voucherApplied=String(m.code).toUpperCase();state.voucherMessage=m.type==='amount'?`Đã giảm ${money(m.value)} cho đơn hàng.`:m.type==='percent'?`Đã giảm ${m.value}% giá trị đơn hàng.`:'Đã áp dụng miễn phí vận chuyển.';}
+      renderLanding();renderModal();
+    }
+    function selectOptions(values,placeholder){return`<option value="">${placeholder}</option>${values.map(item=>`<option value="${safe(item)}">${safe(item)}</option>`).join('')}`}
+    function locationOptions(items,placeholder){return`<option value="">${placeholder}</option>${items.map(item=>`<option value="${safe(item.name)}" data-code="${safe(item.code)}">${safe(item.name)}</option>`).join('')}`}
+    function customFieldsHtml(){const list=Array.isArray(state.config.customFields)?state.config.customFields:(state.form.customFields||[]);return list.map(item=>{const required=item.required?' required':'',mark=item.required?' *':'';if(item.type==='textarea')return`<div class="field"><label>${safe(item.label)}${mark}</label><textarea name="custom_${safe(item.id)}" placeholder="${safe(item.placeholder||'')}"${required}></textarea></div>`;if(item.type==='select')return`<div class="field"><label>${safe(item.label)}${mark}</label><select name="custom_${safe(item.id)}"${required}>${selectOptions(item.options||[],safe(item.placeholder||'-- Chọn --'))}</select></div>`;return`<div class="field"><label>${safe(item.label)}${mark}</label><input name="custom_${safe(item.id)}" type="${['email','number','date'].includes(item.type)?item.type:'text'}" placeholder="${safe(item.placeholder||'')}"${required}></div>`}).join('')}
+    function comboRadioHtml(){const list=state.form.combos||[];if(!list.length)return '';return`<div class="field"><label>Chọn gói mua *</label><div class="combo-radios" role="radiogroup">${list.map((item,index)=>{const price=Number(item.price)||Number(state.form.price)*(Number(item.qty)||1);const base=Number(state.form.price)*(Number(item.qty)||1);const save=base-price;const active=index===state.comboIndex;const hasFee=item.shippingFee!==undefined&&item.shippingFee!==null&&item.shippingFee!=='';const comboShip=item.freeship?0:(hasFee?Math.max(0,Number(item.shippingFee)||0):0);const displayTotal=price+comboShip;const shipLabel=item.freeship?'Free ship':(hasFee?`Phí ship ${money(comboShip)}`:'');const showMath=item.freeship||hasFee;return`<button type="button" class="combo-radio ${active?'active':''}" data-combo-pick="${index}" role="radio" aria-checked="${active}"><span class="combo-radio-dot" aria-hidden="true"></span><span class="combo-radio-name">${safe(item.name)}${save>0?`<small>Tiết kiệm ${money(save)}</small>`:''}${shipLabel?`<small class="combo-radio-ship ${item.freeship?'':'fee'}">${safe(shipLabel)}</small>`:''}</span><span class="combo-radio-price">${showMath?`<small>${money(price)} + ${money(comboShip)} ship</small>`:''}<b>${money(displayTotal)}</b></span></button>`}).join('')}</div></div>`}
+    function summaryHtml(){return`<div class="summary"><div class="summary-row"><span>Tiền hàng (${qty()} sản phẩm)</span><b>${money(baseSubtotal())}</b></div>${bundleDiscount()?`<div class="summary-row"><span>Ưu đãi combo</span><b>−${money(bundleDiscount())}</b></div>`:''}${voucherDiscount()?`<div class="summary-row"><span>Mã ${safe(state.voucherApplied)}</span><b>−${money(voucherDiscount())}</b></div>`:''}${fields().ship!==false||hasComboShipping()?`<div class="summary-row"><span>Phí vận chuyển</span><b>${shipFee()?money(shipFee()):'Miễn phí'}</b></div>`:''}${fields().pay!==false?`<div class="summary-row"><span>Thanh toán</span><b>Thanh toán khi nhận hàng (COD)</b></div>`:''}<div class="total"><strong>Tổng thanh toán</strong><b>${money(grandTotal())}</b></div></div>`}
+    function payHtml(){state.pay='cod';return`<div><span class="group-label">Phương thức thanh toán</span><div class="options"><button class="option active" data-pay="cod" type="button"><span class="icon">●</span><span><strong>Thanh toán khi nhận hàng</strong><small>Trả tiền cho shipper (COD)</small></span><span class="check">◉</span></button></div></div>`}
+    function shipHtml(){return`<div><span class="group-label">Đơn vị vận chuyển</span><div class="ship-options">${shipMethods().map(item=>`<button class="ship-option ${state.ship===item.id?'active':''}" data-ship="${safe(item.id)}" type="button">${safe(item.label)}<small>${money(shipFeeFor(item.id))}</small></button>`).join('')}</div></div>`}
+    function renderModal(){const c=content(),f=fields();modal.innerHTML=`<section class="dialog" tabindex="0"><button class="close" type="button" aria-label="Đóng">×</button>${progressHtml(Math.min(3,state.step+1))}<section class="page ${state.step===1?'active':''}" data-page="1"><form class="form-body" id="lead-form"><div class="identity-grid"><div class="field"><label>Họ và tên *</label><input name="name" required placeholder="Nguyễn Văn A"></div><div class="field"><label>Số điện thoại *</label><div class="phone"><span>+84</span><input name="phone" required inputmode="tel" placeholder="9xx xxx xxx"></div></div></div>${f.email?'<div class="field"><label>Email nhận hóa đơn</label><input name="email" type="email" placeholder="ban@congty.vn"></div>':''}<div class="field address-autocomplete"><label>Tìm địa chỉ giao hàng chính xác *</label><input name="addressSearch" autocomplete="street-address" required placeholder="Nhập số nhà, tên đường, phường/xã..."><span class="search-mark">⌕</span><div class="address-suggestions" id="address-suggestions"></div><div class="address-hint ${state.selectedAddress?'ok':''}" id="address-hint">${state.selectedAddress?'✓ Đã xác định địa chỉ trên bản đồ':'Nhập ít nhất 3 ký tự rồi chọn một địa chỉ được gợi ý.'}</div></div><div class="address-grid"><div class="field"><label>Tỉnh / Thành phố</label><select name="province">${selectOptions(Object.keys(GEO),'-- Chọn --')}</select></div><div class="field"><label>Quận / Huyện</label><select name="district">${selectOptions([],'-- Chọn --')}</select></div><div class="field"><label>Phường / Xã</label><select name="ward">${selectOptions([],'-- Chọn --')}</select></div><div class="field"><label>Số nhà, đường *</label><input name="street" required placeholder="12 Nguyễn Huệ"></div></div>${isPlainTemplate()?comboRadioHtml():''}${f.note!==false?'<div class="field"><label>Ghi chú cho người giao</label><textarea name="note" placeholder="Gọi trước 10 phút, giao giờ hành chính..."></textarea></div>':''}${customFieldsHtml()}${f.pay!==false?payHtml():''}${f.ship!==false?shipHtml():''}${summaryHtml()}<div class="hp"><input name="company" tabindex="-1" autocomplete="off"></div><div class="error" id="form-error"></div><button class="primary" type="submit">${safe(c.ctaBasic||state.form.buttonLabel||'Đặt hàng ngay')}</button><div class="legal">${safe(c.legal||'Bằng việc đặt hàng, bạn đồng ý với điều khoản mua bán của DC Vietnam.')}</div></form></section><section class="page ${state.step===2?'active':''}" data-page="2"><div class="checkout-head"><button class="back" data-back="1">←</button><div><strong>Checkout</strong><small>Kiểm tra và xác nhận đơn hàng</small></div></div><div class="checkout-body"><div class="checkout-card"><h2>${safe(productName())}</h2><div class="summary-row"><span>Gói đã chọn</span><b>${safe(combo()?.name||'Mặc định')} · ${qty()} sản phẩm</b></div></div><div class="checkout-card"><h2>Thông tin nhận hàng</h2><div class="summary-row"><span>Người nhận</span><b id="review-name">—</b></div><div class="summary-row"><span>Điện thoại</span><b id="review-phone">—</b></div><div class="summary-row"><span>Địa chỉ</span><b id="review-address">—</b></div></div>${f.pay!==false?payHtml():''}${summaryHtml()}<div class="error" id="submit-error"></div><button class="primary" id="confirm-order" type="button">Xác nhận đặt hàng COD</button></div></section><section class="page ${state.step===4?'active':''}" data-page="4"><div class="success"><div class="success-icon">✓</div><h2>${safe(c.doneTitle||'Đã ghi nhận đơn hàng')}</h2><p id="done-copy">Đội ngũ sẽ liên hệ xác nhận đơn hàng của bạn.</p><button class="primary" id="finish" type="button" style="margin-top:20px">Hoàn tất</button></div></section></section>`;bindModal();}
+    function setSelectValue(select,value){if(!select||!value)return;if(!Array.from(select.options).some(option=>option.value===value))select.add(new Option(value,value));select.value=value}
+    function chooseAddress(item){state.selectedAddress=item;state.province=item.province||state.province;state.district=item.district||state.district;state.ward=item.ward||state.ward;const search=modal.querySelector('[name="addressSearch"]'),street=modal.querySelector('[name="street"]'),province=modal.querySelector('[name="province"]'),district=modal.querySelector('[name="district"]'),ward=modal.querySelector('[name="ward"]');if(search)search.value=item.label;if(street)street.value=item.street||item.label;setSelectValue(province,state.province);setSelectValue(district,state.district);setSelectValue(ward,state.ward);const list=modal.querySelector('#address-suggestions'),hint=modal.querySelector('#address-hint');if(list){list.classList.remove('open');list.innerHTML=''}if(hint){hint.textContent='✓ Đã xác định địa chỉ trên bản đồ';hint.classList.add('ok')}}
+    async function findAddresses(query){const list=modal.querySelector('#address-suggestions'),hint=modal.querySelector('#address-hint');if(!list)return;const requestId=++state.addressRequest;if(query.length<3){list.classList.remove('open');list.innerHTML='';if(hint){hint.textContent='Nhập ít nhất 3 ký tự rồi chọn một địa chỉ được gợi ý.';hint.classList.remove('ok')}return}list.innerHTML='<div class="address-suggestion">Đang tìm địa chỉ...</div>';list.classList.add('open');try{const response=await fetch(`${API_ORIGIN}/api/public/address-suggestions?q=${encodeURIComponent(query)}`,{cache:'no-store'}),data=await response.json();if(requestId!==state.addressRequest)return;const items=Array.isArray(data.items)?data.items:[];list.innerHTML=items.length?items.map((item,index)=>`<button type="button" class="address-suggestion" data-address-index="${index}">${safe(item.label)}</button>`).join(''):'<div class="address-suggestion">Chưa tìm thấy. Bạn vẫn có thể nhập địa chỉ thủ công.</div>';list.classList.add('open');list.querySelectorAll('[data-address-index]').forEach(button=>button.addEventListener('click',()=>chooseAddress(items[Number(button.dataset.addressIndex)])))}catch(error){if(requestId!==state.addressRequest)return;list.innerHTML='<div class="address-suggestion">Không tải được gợi ý. Vui lòng nhập địa chỉ thủ công.</div>';list.classList.add('open')}}
+    function bindAddressAutocomplete(){const input=modal.querySelector('[name="addressSearch"]');if(!input)return;if(state.selectedAddress)input.value=state.selectedAddress.label||'';input.addEventListener('input',()=>{state.selectedAddress=null;clearTimeout(state.addressTimer);state.addressTimer=setTimeout(()=>findAddresses(input.value.trim()),300)});input.addEventListener('focus',()=>{if(input.value.trim().length>=3)findAddresses(input.value.trim())});input.addEventListener('keydown',event=>{if(event.key==='Escape')modal.querySelector('#address-suggestions')?.classList.remove('open')})}
+    async function fetchLocations(type,code=''){const key=type==='districts'?'province':type==='wards'?'district':'';const url=`${API_ORIGIN}/api/public/locations?type=${encodeURIComponent(type)}${key?`&${key}=${encodeURIComponent(code)}`:''}`;const response=await fetch(url,{cache:'force-cache'}),data=await response.json();if(!response.ok)throw new Error(data.error||'Không tải được địa giới');return Array.isArray(data.items)?data.items:[]}
+    async function loadProvinceOptions(province,district,ward){try{state.provinces=await fetchLocations('provinces');province.innerHTML=locationOptions(state.provinces,'-- Chọn --');setSelectValue(province,state.province)}catch(error){return}province.addEventListener('change',async()=>{const code=province.selectedOptions[0]?.dataset.code||'';if(!code)return;try{district.disabled=true;state.districts=await fetchLocations('districts',code);district.innerHTML=locationOptions(state.districts,'-- Chọn --');district.disabled=false;ward.innerHTML=locationOptions([],'-- Chọn --')}catch(error){district.disabled=false}});district.addEventListener('change',async()=>{const code=district.selectedOptions[0]?.dataset.code||'';if(!code)return;try{ward.disabled=true;state.wards=await fetchLocations('wards',code);ward.innerHTML=locationOptions(state.wards,'-- Chọn --');ward.disabled=false}catch(error){ward.disabled=false}})}
+    function bindModal(){modal.querySelector('.close').addEventListener('click',closeModal);modal.querySelector('#lead-form')?.addEventListener('submit',toCheckout);modal.querySelectorAll('[data-pay]').forEach(button=>button.addEventListener('click',()=>{state.pay=button.dataset.pay;preserveAndRender()}));modal.querySelectorAll('[data-ship]').forEach(button=>button.addEventListener('click',()=>{state.ship=button.dataset.ship;preserveAndRender()}));modal.querySelectorAll('[data-combo-pick]').forEach(button=>button.addEventListener('click',()=>selectCombo(Number(button.dataset.comboPick)||0)));modal.querySelectorAll('[data-back]').forEach(button=>button.addEventListener('click',()=>{state.step=Number(button.dataset.back);preserveAndRender()}));modal.querySelector('#confirm-order')?.addEventListener('click',()=>submitLead());modal.querySelector('#finish')?.addEventListener('click',closeModal);bindAddressAutocomplete();const phoneInput=modal.querySelector('[name="phone"]');if(phoneInput){phoneInput.addEventListener('input',()=>{phoneInput.value=phoneInput.value.replace(/[^\d+]/g,'').slice(0,12);const err=modal.querySelector('#form-error');if(err&&err.classList.contains('show'))err.classList.remove('show')});}const province=modal.querySelector('[name="province"]'),district=modal.querySelector('[name="district"]'),ward=modal.querySelector('[name="ward"]');if(province){setSelectValue(province,state.province);province.addEventListener('change',()=>{state.province=province.value;state.district='';state.ward='';state.selectedAddress=null;district.innerHTML=selectOptions(Object.keys(GEO[state.province]||{}),'-- Chọn --');ward.innerHTML=selectOptions([],'-- Chọn --')});district.innerHTML=selectOptions(Object.keys(GEO[state.province]||{}),'-- Chọn --');setSelectValue(district,state.district);district.addEventListener('change',()=>{state.district=district.value;state.ward='';state.selectedAddress=null;ward.innerHTML=selectOptions(GEO[state.province]?.[state.district]||[],'-- Chọn --')});ward.innerHTML=selectOptions(GEO[state.province]?.[state.district]||[],'-- Chọn --');setSelectValue(ward,state.ward);ward.addEventListener('change',()=>{state.ward=ward.value;state.selectedAddress=null});loadProvinceOptions(province,district,ward)}}
+    function formValues(){const form=modal.querySelector('#lead-form');return form?Object.fromEntries(new FormData(form).entries()):state.values||{}}
+    function restoreFormValues(){Object.entries(state.values||{}).forEach(([key,value])=>{const input=modal.querySelector(`[name="${CSS.escape(key)}"]`);if(input&&!['province','district','ward'].includes(key))input.value=value})}
+    function preserveAndRender(){state.values=formValues();renderModal();restoreFormValues();fillReview()}
+    function selectCombo(index){state.values=formValues();state.comboIndex=Math.max(0,Math.min((state.form?.combos?.length||1)-1,index));renderModal();restoreFormValues();notifyEmbedHeight()}
+    function fillReview(){if(state.step!==2)return;const values=state.values||formValues();const set=(id,value)=>{const el=modal.querySelector(id);if(el)el.textContent=value||'—'};set('#review-name',values.name);set('#review-phone',values.phone);set('#review-address',state.selectedAddress?.label||[values.street||values.addressSearch,state.ward,state.district,state.province].filter(Boolean).join(', '))}
+    function openModal(){state.step=1;trackCheckoutStart();renderModal();modal.classList.add('open');if(embedded&&!isPlainTemplate()){modal.classList.add('embed-flow');const shell=stage.closest('.shell'),back=modal.querySelector('.close');if(shell)shell.style.display='none';if(back){back.textContent='← Quay lại sản phẩm';back.setAttribute('aria-label','Quay lại sản phẩm');}document.body.style.overflow='';try{window.scrollTo(0,0);}catch(e){}}else{document.body.style.overflow='hidden';setTimeout(()=>modal.querySelector('[name="name"]')?.focus(),60)}notifyEmbedHeight()}function closeModal(){modal.classList.remove('open','embed-flow');const shell=stage.closest('.shell');if(shell&&embedded)shell.style.display='';document.body.style.overflow='';try{window.scrollTo(0,0)}catch(e){}notifyEmbedHeight()}function setStep(step){state.values=formValues();state.step=step;renderModal();fillReview();notifyEmbedHeight()}
+    function validateVnPhone(raw){
+      let digits=String(raw||'').replace(/\D/g,'');
+      if(digits.startsWith('84')&&digits.length>=11)digits='0'+digits.slice(2);
+      else if(!digits.startsWith('0')&&digits.length===9&&/^[35789]/.test(digits))digits='0'+digits;
+      const isVnMobile=/^0(3[2-9]|5[25689]|7[06-9]|8[1-9]|9\d)\d{7}$/.test(digits)||/^0[35789]\d{8}$/.test(digits);
+      if(digits.length!==10||!isVnMobile){
+        return{valid:false,phone:digits,error:'Số điện thoại không đúng chuẩn di động Việt Nam (yêu cầu đủ 10 số, bắt đầu bằng 03, 05, 07, 08, 09).'};
+      }
+      if(/^0?(\d)\1{8,9}$/.test(digits)||digits==='0123456789'||digits==='0987654321'){
+        return{valid:false,phone:digits,error:'Số điện thoại không hợp lệ (vui lòng nhập số điện thoại thật).'};
+      }
+      return{valid:true,phone:digits};
+    }
+    function toCheckout(event){event.preventDefault();trackCheckoutStart();const form=event.currentTarget,error=modal.querySelector('#form-error');if(!form.reportValidity())return;const phoneCheck=validateVnPhone(form.phone.value);if(!phoneCheck.valid){error.textContent=phoneCheck.error;error.classList.add('show');form.phone.focus();return}form.phone.value=phoneCheck.phone;state.values=Object.fromEntries(new FormData(form).entries());state.values.phone=phoneCheck.phone;state.province=form.elements.province?.value||state.province;state.district=form.elements.district?.value||state.district;state.ward=form.elements.ward?.value||state.ward;if(isPlainTemplate()){submitLead();return}state.step=2;renderModal();fillReview();notifyEmbedHeight()}
+    async function submitLead(){
+      if(state.submitting)return;
+      const button=state.step===1?modal.querySelector('#lead-form .primary'):modal.querySelector('#confirm-order'),error=modal.querySelector(state.step===1?'#form-error':'#submit-error'),values=state.values||{};
+      const phoneCheck=validateVnPhone(values.phone);
+      if(!phoneCheck.valid){
+        if(error){error.textContent=phoneCheck.error;error.classList.add('show');}
+        return;
+      }
+      values.phone=phoneCheck.phone;
+      state.submitting=true;if(button){button.disabled=true;button.textContent='Đang gửi...'}
+      const customFields=Object.fromEntries(Object.entries(values).filter(([key])=>key.startsWith('custom_')).map(([key,value])=>[key.slice(7),value]));
+      
+      const selfQuery = new URLSearchParams(location.search);
+      const parentQuery = new URLSearchParams(parentTracking.search || (parentTracking.href ? (parentTracking.href.split('?')[1]||'') : ''));
+      let referrerQuery = new URLSearchParams();
+      try { if (document.referrer && document.referrer.includes('?')) referrerQuery = new URLSearchParams(document.referrer.split('?')[1]); } catch(e){}
+      let cachedTracking = {};
+      try { const c = localStorage.getItem('dc_lead_tracking'); if (c) cachedTracking = JSON.parse(c) || {}; } catch(e){}
+      const cachedQuery = new URLSearchParams(cachedTracking.search || '');
+
+      function getT(k) {
+        return selfQuery.get(k) || parentQuery.get(k) || referrerQuery.get(k) || cachedQuery.get(k) || '';
+      }
+
+      const utm_source = getT('utm_source');
+      const utm_medium = getT('utm_medium');
+      const utm_campaign = getT('utm_campaign');
+      const utm_content = getT('utm_content');
+      const utm_term = getT('utm_term');
+
+      const campaign_id = getT('campaign_id') || getT('campaignId') || getT('camp_id') || getT('campaignid') || getT('tt_campaign_id');
+      const adset_id = getT('adset_id') || getT('adsetId') || getT('ad_set_id') || getT('adgroup_id') || getT('adgroupid') || getT('tt_adgroup_id');
+      const ad_id = getT('ad_id') || getT('adId') || getT('adid') || getT('creative') || getT('tt_ad_id');
+      const campaign_name = getT('campaign_name') || getT('campaignName') || utm_campaign;
+      const adset_name = getT('adset_name') || getT('adsetName') || getT('adgroup_name') || getT('adgroupName') || utm_term;
+      const ad_name = getT('ad_name') || getT('adName') || utm_content;
+      const placement = getT('placement') || getT('fb_placement');
+      const site_source_name = getT('site_source_name');
+
+      const fbclid = getT('fbclid');
+      const gclid = getT('gclid');
+      const gbraid = getT('gbraid');
+      const wbraid = getT('wbraid');
+      const ttclid = getT('ttclid') || getT('tiktok_clid');
+      const keyword = getT('keyword') || utm_term;
+      const matchtype = getT('matchtype');
+      const network = getT('network');
+      const device = getT('device');
+
+      const realLanding = parentTracking.href || getT('real_landing') || cachedTracking.href || (embedded && document.referrer ? document.referrer : location.href);
+      const realReferrer = parentTracking.referrer || getT('real_referrer') || cachedTracking.referrer || (embedded ? '' : document.referrer) || '';
+
+      const fbc = (fbclid ? `fb.1.${Date.now()}.${fbclid}` : '') || parentTracking.fbc || getT('fbc') || cachedTracking.fbc || browserCookie('_fbc') || '';
+      const fbp = parentTracking.fbp || getT('fbp') || cachedTracking.fbp || browserCookie('_fbp') || '';
+      const ttp = parentTracking.ttp || getT('ttp') || cachedTracking.ttp || browserCookie('_ttp') || '';
+      const metaLeadId = getT('lead_id') || getT('leadgen_id') || '';
+
+      const addrRaw=state.selectedAddress?.label||[values.street||values.addressSearch,state.ward,state.district,state.province].filter(Boolean).join(', ')||values.addressSearch||values.street||'';
+      const payload={
+        ...values,
+        address:addrRaw,
+        street:state.selectedAddress?.street||values.street||values.addressSearch||'',
+        province:state.selectedAddress?.province||state.province||values.province||'',
+        district:state.selectedAddress?.district||state.district||values.district||'',
+        ward:state.selectedAddress?.ward||state.ward||values.ward||'',
+        addressLat:state.selectedAddress?.lat??null,
+        addressLng:state.selectedAddress?.lng??null,
+        addressSuggestionId:state.selectedAddress?.id||'',
+        customFields,
+        quantity:qty(),
+        comboId:combo()?.id||'',
+        comboName:combo()?.name||'',
+        voucherCode:state.voucherApplied,
+        discountAmount:voucherDiscount(),
+        paymentMethod:'COD',
+        shippingMethodId:state.ship,
+        shippingCarrier:shipMethods().find(item=>item.id===state.ship)?.label||'',
+        shippingFee:shipFee(),
+        consent:true,
+        landingPage:location.href,
+        realLandingPage:realLanding,
+        referrer:document.referrer,
+        realReferrer,
+        utm_source,
+        utm_medium,
+        utm_campaign,
+        utm_content,
+        utm_term,
+        campaign_id,
+        campaign_name,
+        adset_id,
+        adset_name,
+        ad_id,
+        ad_name,
+        placement,
+        site_source_name,
+        fbclid,
+        gclid,
+        gbraid,
+        wbraid,
+        ttclid,
+        keyword,
+        matchtype,
+        network,
+        device,
+        fbc,
+        fbp,
+        ttp,
+        metaLeadId
+      };
+      try{
+        if(previewMode){
+          state.orderCode='PREVIEW';state.step=4;renderModal();
+          const done=modal.querySelector('#done-copy');
+          if(done)done.textContent='Đây là bản xem trước, chưa tạo đơn hàng thật.';
+          notifyEmbedHeight();return;
+        }
+        const response=await fetch(`${API_ORIGIN}/api/public/sales-forms/`+encodeURIComponent(slug),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),data=await response.json();
+        if(!response.ok)throw new Error(data.error||'Không thể gửi thông tin.');
+        state.orderCode=data.orderCode||'';
+        const isDup=Boolean(data.isDuplicate);
+
+        if(!isDup){
+          if(embedded){
+            try{
+              window.parent.postMessage({
+                type:'dc-sales-form:conversion',
+                slug,
+                event:state.pixelEvent||'Lead',
+                orderCode:state.orderCode,
+                value:Number(data.value)||grandTotal(),
+                currency:data.currency||'VND',
+                productName:productName(),
+                productId:state.form?.productId||state.form?.slug||slug,
+                quantity:qty(),
+                phone:values.phone?String(values.phone).replace(/\D/g,''):'',
+                timestamp:Date.now()
+              },'*');
+            }catch(e){}
+          }
+
+          if(!state.pixelSuccessTracked){
+            state.pixelSuccessTracked=true;
+            if(!parentTracking.hasParentFb&&activePixelId){
+              trackMetaEvent(state.pixelEvent,{content_name:productName(),content_ids:[state.form?.productId||state.form?.slug||slug],content_type:'product',value:Number(data.value)||grandTotal(),currency:data.currency||'VND',num_items:qty()},{eventID:state.orderCode||undefined});
+            }
+          }
+        }
+        state.step=4;renderModal();
+        const done=modal.querySelector('#done-copy');
+        if(done)done.textContent=(data.message||'Đội ngũ sẽ liên hệ xác nhận sớm.')+(state.orderCode?' Mã đơn: '+state.orderCode+'.':'');
+        notifyEmbedHeight();
+      }catch(reason){
+        if(error){error.textContent=reason.message;error.classList.add('show');}
+      }finally{
+        state.submitting=false;
+        if(button){button.disabled=false;button.textContent='Xác nhận đặt hàng COD';}
+      }
+    }
+    function mountPlainForm(){const shell=stage.closest('.shell');if(!isPlainTemplate()){modal.classList.remove('plain-mode','compact-mode');if(shell)shell.style.display='';return}stage.innerHTML='';if(shell)shell.style.display='none';modal.classList.remove('open');modal.classList.add('plain-mode');modal.classList.toggle('compact-mode',state.form?.template==='plain_compact');document.body.style.overflow='';modal.querySelector('.close')?.remove();modal.querySelector('.popup-progress')?.remove();modal.querySelectorAll('.summary').forEach(element=>element.remove());if(state.form?.template==='plain_compact')modal.querySelector('.address-grid')?.remove();const eyebrow=modal.querySelector('.form-head .eyebrow'),title=modal.querySelector('.form-head h1'),sub=modal.querySelector('.form-head p'),c=content();if(eyebrow)eyebrow.textContent=state.form?.template==='plain_compact'?'FORM NHANH':'FORM THÔNG TIN';if(title)title.textContent=c.plainTitle||'Điền thông tin nhận hàng';if(sub)sub.textContent=c.plainSub||'Chúng tôi gọi xác nhận trước khi giao';notifyEmbedHeight()}
+    if(modal && typeof MutationObserver !== 'undefined')new MutationObserver(()=>{if(isPlainTemplate())mountPlainForm()}).observe(modal,{childList:true,subtree:false});
+    let touchY=0,touchDialog=null;
+    modal.addEventListener('wheel',event=>{const dialog=event.target.closest?.('.dialog');if(!dialog||dialog.scrollHeight<=dialog.clientHeight)return;event.preventDefault();dialog.scrollTop+=event.deltaY},{passive:false});
+    modal.addEventListener('touchstart',event=>{touchDialog=event.target.closest?.('.dialog')||null;touchY=event.touches[0]?.clientY||0},{passive:true});
+    modal.addEventListener('touchmove',event=>{if(!touchDialog||touchDialog.scrollHeight<=touchDialog.clientHeight)return;const y=event.touches[0]?.clientY||touchY;touchDialog.scrollTop+=touchY-y;touchY=y;event.preventDefault()},{passive:false});
+    modal.addEventListener('focusin',event=>{if(!embedded||!event.target?.matches?.('input,select,textarea'))return;const field=event.target;setTimeout(()=>{try{field.scrollIntoView({block:'nearest',inline:'nearest'})}catch(error){}},320)});
+    modal.addEventListener('touchend',()=>{touchDialog=null},{passive:true});modal.addEventListener('click',event=>{if(event.target===modal)closeModal()});document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('open'))closeModal()});window.addEventListener('resize',notifyEmbedHeight);window.addEventListener('message',event=>{if(event.data?.type==='dc-sales-form:request-resize'){notifyEmbedHeight();return}if(!previewMode||event.origin!==location.origin||event.data?.type!=='dc-sales-form:preview'||!event.data.form)return;hydrateForm(event.data.form)});if('ResizeObserver'in window)new ResizeObserver(notifyEmbedHeight).observe(stage);boot();
+  </script>
+</body>
+</html>

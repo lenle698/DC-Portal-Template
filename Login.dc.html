@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/jpeg" href="/assets/dc-logo.jpg">
+<link rel="apple-touch-icon" href="/assets/dc-logo.jpg">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Be Vietnam Pro',system-ui,sans-serif;color:#23262F;-webkit-font-smoothing:antialiased}
+  button,input,select,textarea{font-family:'Be Vietnam Pro',system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important}
+  a{color:#F47920;text-decoration:none}
+  a:hover{color:#12205F}
+  input:focus{outline:none;border-color:#F47920!important;background:#fff!important}
+  .ms{font-family:'Material Symbols Outlined';line-height:1}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes loginLoadPulse{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  @keyframes loginLoadBar{0%{transform:translateX(-110%)}55%{transform:translateX(135%)}100%{transform:translateX(250%)}}
+  .login-page-loader{position:fixed;inset:0;z-index:999;background:#F4F6FA;display:grid;place-items:center}.login-native-loader{display:none}.login-navigating .login-native-loader{display:grid}.login-page-loader>div{text-align:center;width:320px;max-width:calc(100vw - 32px)}.login-page-loader img{width:62px;height:62px;border-radius:15px;background:#fff;border:1px solid #E5E9F1;object-fit:contain;animation:loginLoadPulse 1.5s ease-in-out infinite}.login-page-loader strong{display:block;margin-top:15px;color:#12205F;font-size:16px}.login-page-loader small{display:block;margin-top:5px;color:#8993A8;font-size:12px}.login-load-track{height:4px;max-width:205px;margin:18px auto 0;background:#E1E6EF;border-radius:8px;overflow:hidden}.login-load-track:after{content:'';display:block;width:42%;height:100%;background:#F47920;border-radius:8px;animation:loginLoadBar 1.2s ease-in-out infinite}
+  .lark-button{width:100%;height:50px;border:1.5px solid #DCE3F5;border-radius:12px;background:#fff;color:#16237A;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:11px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(18,32,95,.05);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+  .lark-button:hover{border-color:#4C7DFF;box-shadow:0 8px 18px rgba(38,95,222,.14);transform:translateY(-1px)}
+  .lark-button:active{transform:translateY(0)}
+  .lark-logo{width:72px;height:26px;object-fit:contain;flex-shrink:0}
+  .lark-note{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;color:#8A8F9E;font-size:11.5px;line-height:1.4;text-align:center}
+  .lark-note .ms{font-size:15px;color:#4C7DFF}
+  .login-options{margin-top:20px;display:flex;flex-direction:column;gap:14px}
+  .login-shell{min-height:100dvh}
+  .login-mobile-hero,.mobile-login-value{display:none}
+
+  /* Email OTP Section */
+  .login-divider{display:flex;align-items:center;text-align:center;margin:6px 0;color:#9AA2B4;font-size:10.5px;font-weight:700;letter-spacing:1px}
+  .login-divider::before,.login-divider::after{content:'';flex:1;border-bottom:1px solid #E5E9F1}
+  .login-divider span{padding:0 10px}
+  .email-otp-card{background:#F8FAFD;border:1.5px solid #E2E8F0;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px rgba(18,32,95,.03)}
+  .email-input-group{display:flex;align-items:stretch;background:#fff;border:1.5px solid #DCE3F5;border-radius:10px;overflow:hidden;transition:border-color .18s,box-shadow .18s}
+  .email-input-group:focus-within{border-color:#F47920;box-shadow:0 0 0 3px rgba(244,121,32,.12)}
+  .email-icon-box{display:flex;align-items:center;padding-left:11px;color:#8E97AB;font-size:19px}
+  .email-input-field{flex:1;height:42px;border:none;padding:0 8px;font-family:inherit;font-size:13.5px;color:#12205F;background:transparent;outline:none;min-width:0}
+  .email-fixed-badge{display:flex;align-items:center;padding:0 11px;background:#EEF2F7;color:#4A5568;font-size:12px;font-weight:700;border-left:1px solid #E2E8F0;user-select:none;letter-spacing:.2px}
+  .otp-row{display:flex;gap:8px}
+  .otp-code-input{flex:1;height:42px;border:1.5px solid #DCE3F5;border-radius:10px;background:#fff;text-align:center;font-family:'Be Vietnam Pro',system-ui,sans-serif!important;font-size:17px;font-weight:700;letter-spacing:4px;color:#12205F;outline:none;transition:border-color .18s,box-shadow .18s}
+  .otp-code-input::placeholder{font-family:'Be Vietnam Pro',system-ui,sans-serif!important;letter-spacing:normal!important;font-size:13px!important;font-weight:500!important;color:#9AA2B4!important}
+  .otp-code-input:focus{border-color:#F47920;box-shadow:0 0 0 3px rgba(244,121,32,.12)}
+  .btn-send-otp{height:42px;padding:0 14px;border:1.5px solid #DCE3F5;border-radius:10px;background:#fff;color:#12205F;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:5px;transition:all .16s ease}
+  .btn-send-otp:hover:not(:disabled){background:#F0F4FF;border-color:#4C7DFF;color:#16237A}
+  .btn-send-otp:disabled{opacity:.6;cursor:not-allowed}
+  .btn-login-submit{height:44px;width:100%;border:none;border-radius:10px;background:linear-gradient(135deg,#12205F,#1F3699);color:#fff;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 3px 10px rgba(18,32,95,.15);transition:all .18s ease}
+  .btn-login-submit:hover:not(:disabled){background:linear-gradient(135deg,#F47920,#E0640D);box-shadow:0 5px 15px rgba(244,121,32,.28);transform:translateY(-1px)}
+  .btn-login-submit:disabled{opacity:.55;cursor:not-allowed;transform:none}
+  .otp-msg-box{padding:8px 11px;border-radius:8px;font-size:11.5px;line-height:1.45;display:flex;align-items:center;gap:6px}
+  .otp-msg-box.error{background:#FEF2F2;color:#DC2626;border:1px solid #FEE2E2}
+  .otp-msg-box.success{background:#F0FDF4;color:#16A34A;border:1px solid #DCFCE7}
+
+  @media (max-width:900px){
+    .login-shell{grid-template-columns:minmax(280px,.8fr) 1.2fr!important}
+    .login-brand{padding:36px 30px!important}
+    .login-brand [style*="font-size:34px"]{font-size:28px!important}
+    .login-form-pane{padding:32px!important}
+  }
+  @media (max-width:700px){
+    body{background:#fff}
+    .login-shell{display:flex!important;flex-direction:column;height:auto!important;min-height:0!important;overflow:visible!important}
+    .login-brand{min-height:0;padding:22px 20px!important;justify-content:flex-start!important;gap:16px;background:linear-gradient(145deg,#12205F,#273D9D)!important}
+    .login-brand>div:nth-child(3),.login-brand>div:nth-child(4),.login-brand>div:last-child{display:none!important}
+    .login-brand>div:nth-child(6){max-width:100%!important}
+    .login-brand>div:nth-child(6)>div:first-child{font-size:24px!important;line-height:1.3!important}
+    .login-brand>div:nth-child(6)>div:nth-child(2),
+    .login-brand>div:nth-child(6)>div:nth-child(3){display:none!important}
+    .login-form-pane{flex:0 0 auto;align-items:flex-start!important;padding:28px 20px!important}
+    .login-form-pane>div{max-width:none!important}
+    .login-form-pane [style*="font-size:26px"]{font-size:23px!important}
+    .login-form-pane [style*="justify-content:space-between"]{gap:10px!important;flex-wrap:wrap!important}
+    .login-form-pane [style*="justify-content:space-between"] a{margin-left:auto}
+    .lark-button{height:50px;font-size:14px}
+    .login-mobile-hero{display:block!important;position:relative;color:#fff;max-width:340px}
+    .login-mobile-hero .eyebrow{font-size:10px;font-weight:800;letter-spacing:1.2px;color:#AEB9EC}
+    .login-mobile-hero h1{font-size:25px;line-height:1.25;letter-spacing:-.4px;margin-top:8px}
+    .login-mobile-hero p{font-size:12.5px;line-height:1.5;color:#DCE0F0;margin-top:8px;max-width:310px}
+    .mobile-login-value{display:flex;flex-direction:column;gap:10px;margin:18px 0 2px}
+    .mobile-login-value>div{display:flex;align-items:center;gap:10px;color:#EEF1FF;text-align:left}
+    .mobile-login-value .ms{font-size:19px;color:#F47920;display:block;flex:0 0 20px}
+    .mobile-login-value span:last-child{display:block;font-size:11.5px;line-height:1.35;color:#EEF1FF;font-weight:600}
+  }
+  @media (max-width:380px){
+    .login-brand{min-height:0;padding:18px!important}
+    .login-brand>div:nth-child(5){display:none!important}
+    .login-form-pane{padding:20px 14px 28px!important}
+    .email-fixed-badge{padding:0 7px;font-size:11px}
+  }
+</style>
+</helmet>
+<div class="login-shell" style="display:grid;grid-template-columns:1.05fr 1fr;height:100vh;width:100%;overflow:hidden;background:#fff">
+
+  <div class="login-brand" style="position:relative;background:#12205F;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:48px 56px">
+    <div style="position:relative;display:flex;align-items:center;gap:13px">
+      <div style="width:52px;height:52px;border-radius:13px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden">
+        <img src="assets/dc-logo.jpg" alt="DC" style="width:46px;height:46px;object-fit:contain">
+      </div>
+      <div>
+        <div style="color:#fff;font-weight:800;font-size:20px;letter-spacing:.3px">DC VIETNAM</div>
+        <div style="color:#8E96C4;font-size:12px;font-weight:500;letter-spacing:.5px">PORTAL QUẢN TRỊ</div>
+      </div>
+    </div>
+
+    <div class="login-mobile-hero">
+      <h1>Quản trị vận hành<br>Ecom tập trung</h1>
+      <p>Một cổng duy nhất cho dự án, nhân sự, KPI/OKR, quảng cáo và báo cáo hiệu suất — phân quyền theo vai trò.</p>
+      <div class="mobile-login-value">
+        <div><span class="ms">insights</span><span>Dashboard đa kênh: Shopee, TikTok, Lazada, Amazon</span></div>
+        <div><span class="ms">target</span><span>Theo dõi KPI/OKR theo dự án và nhân sự</span></div>
+        <div><span class="ms">admin_panel_settings</span><span>Phân quyền chi tiết cho từng vai trò</span></div>
+      </div>
+    </div>
+
+    <div style="position:relative;max-width:440px">
+      <div style="font-size:34px;font-weight:800;color:#fff;line-height:1.25;letter-spacing:-.5px">Quản trị vận hành<br>Ecom tập trung</div>
+      <div style="font-size:15px;color:#B7BEE0;line-height:1.6;margin-top:16px">Một cổng duy nhất cho dự án, nhân sự, KPI/OKR, quảng cáo và báo cáo hiệu suất — phân quyền theo vai trò.</div>
+      <div style="display:flex;flex-direction:column;gap:14px;margin-top:32px">
+        <div style="display:flex;align-items:center;gap:12px;color:#DCE0F0;font-size:14px"><span class="ms" style="font-size:22px;color:#F47920">insights</span>Dashboard đa kênh: Shopee, TikTok, Lazada, Amazon</div>
+        <div style="display:flex;align-items:center;gap:12px;color:#DCE0F0;font-size:14px"><span class="ms" style="font-size:22px;color:#F47920">target</span>Theo dõi KPI/OKR theo dự án và nhân sự</div>
+        <div style="display:flex;align-items:center;gap:12px;color:#DCE0F0;font-size:14px"><span class="ms" style="font-size:22px;color:#F47920">admin_panel_settings</span>Phân quyền chi tiết cho từng vai trò</div>
+      </div>
+    </div>
+
+    <div style="position:relative;color:#6C74A6;font-size:12.5px">© 2026 Portal Platform · portal-template</div>
+  </div>
+
+  <div class="login-form-pane" style="display:flex;align-items:center;justify-content:center;padding:36px;overflow-y:auto">
+    <div style="width:100%;max-width:410px;animation:fadeUp .4s ease">
+      <div style="font-size:26px;font-weight:800;color:#12205F;letter-spacing:-.3px">Đăng nhập</div>
+      <div style="font-size:13.5px;color:#8A8F9E;margin-top:4px">Chọn phương thức đăng nhập dành cho thành viên tổ chức.</div>
+
+      <div class="login-options">
+        <a href="{{ larkHref }}" class="lark-button" onClick="{{ onLarkClick }}" aria-label="Đăng nhập bằng tài khoản Lark">
+          <img class="lark-logo" src="assets/lark-logo.png" alt="Lark">
+          Tiếp tục với Lark
+        </a>
+
+        <div class="login-divider">
+          <span>HOẶC DÙNG EMAIL XÁC THỰC OTP</span>
+        </div>
+
+        <div class="email-otp-card">
+          <div style="font-size:12px;font-weight:700;color:#12205F">Email nhân sự & Mã OTP</div>
+          
+          <div class="email-input-group">
+            <div class="email-icon-box"><span class="ms">mail</span></div>
+            <input type="email" class="email-input-field" placeholder="ten@congty.com" value="{{ emailUsername }}" onInput="{{ onEmailInput }}" onKeyDown="{{ onEmailKeyDown }}" aria-label="Địa chỉ email">
+          </div>
+
+          <div class="otp-row">
+            <input type="text" class="otp-code-input" placeholder="Nhập 6 số OTP" maxlength="6" inputmode="numeric" value="{{ otpCode }}" onInput="{{ onOtpInput }}" onKeyDown="{{ onOtpKeyDown }}" aria-label="Mã xác thực OTP">
+            <button class="btn-send-otp" onClick="{{ onSendOtpClick }}" disabled="{{ sendOtpDisabled }}">
+              <span class="ms" style="font-size:16px">send</span>
+              {{ sendOtpLabel }}
+            </button>
+          </div>
+
+          <sc-if value="{{ hasError }}" hint-placeholder-val="">
+            <div class="otp-msg-box error">
+              <span class="ms" style="font-size:16px">error</span>
+              <span>{{ errorMsg }}</span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hasSuccess }}" hint-placeholder-val="">
+            <div class="otp-msg-box success">
+              <span class="ms" style="font-size:16px">check_circle</span>
+              <span>{{ successMsg }}</span>
+            </div>
+          </sc-if>
+
+          <button class="btn-login-submit" onClick="{{ onVerifyOtpClick }}" disabled="{{ verifyOtpDisabled }}">
+            <span class="ms" style="font-size:18px">lock_open</span>
+            {{ verifyOtpLabel }}
+          </button>
+        </div>
+
+        <label class="remember-toggle" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;color:#5F6880;font-size:12.5px;cursor:pointer">
+          <input id="remember-login" type="checkbox" checked="{{ remember }}" onChange="{{ toggleRemember }}" style="accent-color:#2E43A8;width:16px;height:16px">
+          Duy trì đăng nhập trên thiết bị này trong 90 ngày
+        </label>
+
+        <div class="lark-note">
+          <span class="ms">verified_user</span>
+          Mã OTP 6 số sẽ được gửi trực tiếp về hòm thư email của bạn.
+        </div>
+      </div>
+
+      <div style="text-align:center;font-size:12.5px;color:#8A8F9E;margin-top:22px">
+        Chưa có tài khoản công ty? <a href="#" style="font-weight:600">Liên hệ quản trị viên</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="login-page-loader login-native-loader"><div><img src="/assets/dc-logo.jpg" alt="Portal"><strong>PORTAL PLATFORM</strong><small>Đang tải dữ liệu</small><div class="login-load-track"></div></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      remember: true,
+      emailUsername: '',
+      otpCode: '',
+      otpSent: false,
+      sendingOtp: false,
+      verifyingOtp: false,
+      countdown: 0,
+      errorMsg: '',
+      successMsg: ''
+    };
+    this._timer = null;
+  }
+
+  cleanEmail() {
+    let raw = (this.state.emailUsername || '').trim();
+    if (!raw) return '';
+    return raw.toLowerCase();
+  }
+
+  async handleSendOtp() {
+    if (this.state.sendingOtp || this.state.countdown > 0) return;
+    const email = this.cleanEmail();
+    if (!email || !email.includes('@')) {
+      this.setState({ errorMsg: 'Vui lòng nhập đầy đủ địa chỉ email.', successMsg: '' });
+      return;
+    }
+
+    this.setState({ sendingOtp: true, errorMsg: '', successMsg: '' });
+    try {
+      const res = await fetch('/api/public/auth/send-email-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Không thể gửi mã OTP lúc này');
+
+      this.setState({
+        sendingOtp: false,
+        otpSent: true,
+        countdown: 45,
+        successMsg: data.message || 'Mã OTP đã được gửi về hòm thư email của bạn. Vui lòng kiểm tra hộp thư đến (hoặc Spam).'
+      });
+
+      if (this._timer) clearInterval(this._timer);
+      this._timer = setInterval(() => {
+        if (this.state.countdown <= 1) {
+          clearInterval(this._timer);
+          this.setState({ countdown: 0 });
+        } else {
+          this.setState({ countdown: this.state.countdown - 1 });
+        }
+      }, 1000);
+    } catch (err) {
+      this.setState({ sendingOtp: false, errorMsg: err.message || 'Lỗi gửi mã OTP' });
+    }
+  }
+
+  async handleVerifyOtp() {
+    if (this.state.verifyingOtp) return;
+    const email = this.cleanEmail();
+    const otp = (this.state.otpCode || '').trim();
+
+    if (!email) {
+      this.setState({ errorMsg: 'Vui lòng nhập địa chỉ email.', successMsg: '' });
+      return;
+    }
+    if (otp.length !== 6) {
+      this.setState({ errorMsg: 'Vui lòng nhập đầy đủ 6 số OTP.', successMsg: '' });
+      return;
+    }
+
+    this.setState({ verifyingOtp: true, errorMsg: '' });
+    try {
+      const res = await fetch('/api/public/auth/verify-email-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp, remember: this.state.remember })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Mã OTP không chính xác');
+
+      try { document.documentElement.classList.add('login-navigating'); } catch (_) {}
+      window.location.href = data.redirectUrl || '/portal';
+    } catch (err) {
+      this.setState({ verifyingOtp: false, errorMsg: err.message || 'Xác thực OTP thất bại.' });
+    }
+  }
+
+  renderVals() {
+    const isSending = this.state.sendingOtp;
+    const isVerifying = this.state.verifyingOtp;
+    const countdown = this.state.countdown;
+    const sendOtpDisabled = isSending || countdown > 0;
+    const sendOtpLabel = isSending ? 'Đang gửi...' : (countdown > 0 ? ('Gửi lại (' + countdown + 's)') : (this.state.otpSent ? 'Gửi lại mã' : 'Lấy mã OTP'));
+    const verifyOtpDisabled = isVerifying || (this.state.otpCode || '').length !== 6;
+    const verifyOtpLabel = isVerifying ? 'Đang đăng nhập...' : 'Đăng nhập ngay';
+
+    return {
+      remember: this.state.remember,
+      emailUsername: this.state.emailUsername,
+      otpCode: this.state.otpCode,
+      sendOtpDisabled,
+      sendOtpLabel,
+      verifyOtpDisabled,
+      verifyOtpLabel,
+      hasError: !!this.state.errorMsg,
+      errorMsg: this.state.errorMsg,
+      hasSuccess: !!this.state.successMsg,
+      successMsg: this.state.successMsg,
+      larkHref: '/auth/lark?remember=' + (this.state.remember ? '1' : '0'),
+      onLarkClick: () => { try { document.documentElement.classList.add('login-navigating'); } catch (err) {} },
+      toggleRemember: (e) => this.setState({ remember: !!(e && e.target ? e.target.checked : !this.state.remember) }),
+      onEmailInput: (e) => this.setState({ emailUsername: e.target.value.trim(), errorMsg: '' }),
+      onEmailKeyDown: (e) => { if (e.key === 'Enter') this.handleSendOtp(); },
+      onOtpInput: (e) => this.setState({ otpCode: e.target.value.replace(/\D/g, '').slice(0, 6), errorMsg: '' }),
+      onOtpKeyDown: (e) => { if (e.key === 'Enter') this.handleVerifyOtp(); },
+      onSendOtpClick: () => this.handleSendOtp(),
+      onVerifyOtpClick: () => this.handleVerifyOtp()
+    };
+  }
+}
+</script>
+</body>
+</html>
