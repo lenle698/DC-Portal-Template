@@ -54,6 +54,24 @@ let tenantAccessTokenCache = { value: null, expiresAt: 0 };
 let tenantAccessTokenPromise = null;
 let larkOrganizationMemoryCache = { data: null, expiresAt: 0 };
 
+// High-efficiency in-memory caches to minimize Firestore read operations and Cloud Run compute costs
+const userAccessMemoryCache = new Map();
+const USER_ACCESS_CACHE_TTL = 60000;
+function invalidateUserAccessCache(loginId = null) {
+  if (loginId) userAccessMemoryCache.delete(loginId);
+  else userAccessMemoryCache.clear();
+}
+
+let commerceOrdersMemoryCache = { at: 0, rawItems: null, connectors: null };
+function invalidateCommerceOrdersCache() {
+  commerceOrdersMemoryCache = { at: 0, rawItems: null, connectors: null };
+}
+
+let notificationsRawDataCache = { at: 0, tasks: null, invoices: null, financeRecords: null, larkSync: null };
+function invalidateNotificationsCache() {
+  notificationsRawDataCache = { at: 0, tasks: null, invoices: null, financeRecords: null, larkSync: null };
+}
+
 async function pMap(items, fn, concurrency = 6) {
   const list = Array.isArray(items) ? items : Array.from(items || []);
   if (!list.length) return [];
@@ -346,6 +364,10 @@ function accessPolicyId(subject = '') {
 }
 
 async function userAccess(loginId) {
+  const cached = userAccessMemoryCache.get(loginId);
+  if (cached && (Date.now() - cached.at < USER_ACCESS_CACHE_TTL)) {
+    return cached.access;
+  }
   const snapshot = await firestore.collection('users').doc(loginId).get();
   const user = { ...(snapshot.data() || {}), loginId };
   const subject = accessSubject(user, loginId);
@@ -373,7 +395,9 @@ async function userAccess(loginId) {
   const modules = [...new Set(rawModules.filter(m => m !== 'reports'))];
   if (!modules.includes('analytics')) modules.push('analytics');
 
-  return { user, policy, subject, special, role, roleId, roleIds: assignedRoleIds, level, modules };
+  const access = { user, policy, subject, special, role, roleId, roleIds: assignedRoleIds, level, modules };
+  userAccessMemoryCache.set(loginId, { at: Date.now(), access });
+  return access;
 }
 
 function canSeeOwnedRecord(access, record = {}) {
@@ -1938,6 +1962,7 @@ async function upsertCommerceOrders(source, accountId, rawOrders = []) {
     imported: FieldValue.increment(processedCount),
     status: 'connected', updatedAt: new Date()
   }, { merge: true });
+  invalidateCommerceOrdersCache();
   return processedCount;
 }
 
@@ -5719,13 +5744,48 @@ async function buildNotifications(loginId) {
   const allowed = new Set(access.modules);
   const readIds = new Set(Array.isArray(access.user.notificationReadIds) ? access.user.notificationReadIds : []);
   const items = [];
-  const jobs = [];
+  const now = Date.now();
 
-  if (allowed.has('tasks')) jobs.push(firestore.collection('tasks').orderBy('createdAt', 'desc').limit(40).get().then(snapshot => {
-    for (const doc of snapshot.docs) {
-      const task = doc.data();
+  let rawTasks = notificationsRawDataCache.tasks;
+  let rawInvoices = notificationsRawDataCache.invoices;
+  let rawFinance = notificationsRawDataCache.financeRecords;
+  let rawLarkSync = notificationsRawDataCache.larkSync;
+
+  if (!rawTasks || !rawInvoices || !rawFinance || (now - notificationsRawDataCache.at > 60000)) {
+    const jobs = [];
+    let fetchedTasks = [];
+    let fetchedInvoices = [];
+    let fetchedFinance = [];
+    let fetchedLarkSync = null;
+
+    jobs.push(firestore.collection('tasks').orderBy('createdAt', 'desc').limit(40).get().then(snapshot => {
+      fetchedTasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }).catch(error => console.warn('Task notifications unavailable:', error?.message || 'unknown error')));
+
+    jobs.push(firestore.collection('invoices').orderBy('createdAt', 'desc').limit(30).get().then(snapshot => {
+      fetchedInvoices = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }).catch(error => console.warn('Invoice notifications unavailable:', error?.message || 'unknown error')));
+
+    jobs.push(firestore.collection('financeRecords').orderBy('updatedAt', 'desc').limit(40).get().then(snapshot => {
+      fetchedFinance = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }).catch(error => console.warn('Finance notifications unavailable:', error?.message || 'unknown error')));
+
+    jobs.push(firestore.collection('system').doc('lark-organization-latest').get().then(snapshot => {
+      if (snapshot.exists) fetchedLarkSync = snapshot.data();
+    }).catch(error => console.warn('Lark sync notification unavailable:', error?.message || 'unknown error')));
+
+    await Promise.all(jobs);
+    rawTasks = fetchedTasks;
+    rawInvoices = fetchedInvoices;
+    rawFinance = fetchedFinance;
+    rawLarkSync = fetchedLarkSync;
+    notificationsRawDataCache = { at: now, tasks: rawTasks, invoices: rawInvoices, financeRecords: rawFinance, larkSync: rawLarkSync };
+  }
+
+  if (allowed.has('tasks') && Array.isArray(rawTasks)) {
+    for (const task of rawTasks) {
       if (access.level === 'employee' && !taskVisibleToEmployee(task, loginId, access.user)) continue;
-      const id = `task:${doc.id}`;
+      const id = `task:${task.id}`;
       items.push({
         id, type: 'task', icon: 'assignment', section: 'tasks', focusId: id,
         title: task.priority === 'Khẩn' ? `Task khẩn: ${task.title}` : `Công việc: ${task.title}`,
@@ -5733,14 +5793,13 @@ async function buildNotifications(loginId) {
         createdAt: timestampMillis(task.updatedAt || task.createdAt), read: readIds.has(id),
       });
     }
-  }).catch(error => console.warn('Task notifications unavailable:', error?.message || 'unknown error')));
+  }
 
-  if (allowed.has('finance')) jobs.push(firestore.collection('invoices').orderBy('createdAt', 'desc').limit(30).get().then(snapshot => {
-    for (const doc of snapshot.docs) {
-      const invoice = doc.data();
+  if (allowed.has('finance') && Array.isArray(rawInvoices)) {
+    for (const invoice of rawInvoices) {
       if (!['Thiếu file đối soát', 'Chờ đối soát', 'Chờ duyệt'].includes(invoice.status)) continue;
-      const id = `invoice:${doc.id}`;
-      const fileName = invoice.invoiceFile?.fileName || invoice.reconciliationFile?.fileName || `HD-${doc.id.slice(0, 8)}`;
+      const id = `invoice:${invoice.id}`;
+      const fileName = invoice.invoiceFile?.fileName || invoice.reconciliationFile?.fileName || `HD-${String(invoice.id).slice(0, 8)}`;
       items.push({
         id, type: 'invoice', icon: invoice.status === 'Thiếu file đối soát' ? 'warning' : 'receipt_long', section: 'finance', focusId: id,
         title: invoice.status === 'Thiếu file đối soát' ? 'Hóa đơn thiếu file đối soát' : 'Hóa đơn đang chờ xử lý',
@@ -5748,13 +5807,13 @@ async function buildNotifications(loginId) {
         createdAt: timestampMillis(invoice.updatedAt || invoice.createdAt), read: readIds.has(id),
       });
     }
-  }).catch(error => console.warn('Invoice notifications unavailable:', error?.message || 'unknown error')));
+  }
 
-  if (allowed.has('finance')) jobs.push(firestore.collection('financeRecords').orderBy('updatedAt', 'desc').limit(40).get().then(snapshot => {
-    for (const doc of snapshot.docs) {
-      const record = serializeFinanceRecord(doc.id, doc.data());
+  if (allowed.has('finance') && Array.isArray(rawFinance)) {
+    for (const raw of rawFinance) {
+      const record = serializeFinanceRecord(raw.id, raw);
       if (record.complete) continue;
-      const id = `invoice:${doc.id}`;
+      const id = `invoice:${raw.id}`;
       const urgent = /lệch|Chênh lệch/i.test(record.status);
       items.push({
         id, type: 'invoice', icon: urgent ? 'warning' : 'account_balance_wallet', section: 'finance', focusId: id,
@@ -5763,20 +5822,18 @@ async function buildNotifications(loginId) {
         createdAt: record.updatedAt, read: readIds.has(id),
       });
     }
-  }).catch(error => console.warn('Finance notifications unavailable:', error?.message || 'unknown error')));
+  }
 
-  if (allowed.has('hr')) jobs.push(firestore.collection('system').doc('lark-organization-latest').get().then(snapshot => {
-    if (!snapshot.exists) return;
-    const syncedAt = timestampMillis(snapshot.data()?.syncedAt || snapshot.data()?.updatedAt);
+  if (allowed.has('hr') && rawLarkSync) {
+    const syncedAt = timestampMillis(rawLarkSync.syncedAt || rawLarkSync.updatedAt);
     const dayKey = syncedAt ? new Date(syncedAt).toISOString().slice(0, 10) : 'latest';
     const id = `lark-sync:${dayKey}`;
     items.push({ id, type: 'system', icon: 'groups', section: 'hr', focusId: null, title: 'Nhân sự Lark đã được đồng bộ', body: 'Danh sách nhân sự và phòng ban đã cập nhật dữ liệu gần nhất.', createdAt: syncedAt, read: readIds.has(id) });
-  }).catch(error => console.warn('Lark sync notification unavailable:', error?.message || 'unknown error')));
+  }
 
-  await Promise.all(jobs);
   if (!items.length) {
     const id = 'portal:ready';
-    items.push({ id, type: 'system', icon: 'check_circle', section: 'dashboard', focusId: null, title: 'DC Vietnam Portal đã sẵn sàng', body: 'Hiện chưa có công việc hay chứng từ nào cần bạn xử lý.', createdAt: timestampMillis(access.user.lastLoginAt || access.user.profileSyncedAt), read: readIds.has(id) });
+    items.push({ id, type: 'system', icon: 'check_circle', section: 'dashboard', focusId: null, title: `${companyName} Portal đã sẵn sàng`, body: 'Hiện chưa có công việc hay chứng từ nào cần bạn xử lý.', createdAt: timestampMillis(access.user.lastLoginAt || access.user.profileSyncedAt), read: readIds.has(id) });
   }
   items.sort((a, b) => b.createdAt - a.createdAt || a.title.localeCompare(b.title, 'vi'));
   const limited = items.slice(0, 25);
@@ -9672,6 +9729,7 @@ createServer(async (request, response) => {
       }
       update.timeline = timeline;
       await ref.set(update, { merge:true });
+      invalidateCommerceOrdersCache();
       const fresh = await ref.get();
       return json(response, 200, { tracking, order:serializeCommerceOrder(fresh.id, fresh.data() || {}) });
     } catch (error) {
@@ -9696,24 +9754,35 @@ createServer(async (request, response) => {
       const canAccessLeadForms = access.modules.includes('salesforms');
       if (!canAccessOrders && !canAccessLeadForms) return json(response, 403, { error: 'Orders or sales forms access is required' });
       if (request.method === 'GET' && requestUrl.pathname === '/api/orders') {
+        const isFresh = requestUrl.searchParams.get('fresh') === '1';
         if (canAccessOrders && requestUrl.searchParams.get('sync') === 'auto') {
           const [latest,configuredShopify]=await Promise.all([firestore.collection('system').doc('order-connector-shopify').get(),firestore.collection('integrationConnections').where('sourceId','==','shopify').get()]);
           const dueSaved=configuredShopify.docs.some(doc=>{const data=doc.data()||{};if(data.enabled===false||!['5m','hourly','daily'].includes(data.cadence))return false;const interval=data.cadence==='daily'?86400000:data.cadence==='hourly'?3600000:300000;return Date.now()-timestampMillis(data.lastSyncAt)>interval;});
           const dueLegacy=Boolean(shopifyStoreDomain&&shopifyAccessToken&&Date.now()-timestampMillis(latest.data()?.lastSyncAt)>5*60000);
-          if(dueLegacy||dueSaved)await syncCommerceOrders('shopify');
+          if(dueLegacy||dueSaved) {
+            await syncCommerceOrders('shopify');
+            invalidateCommerceOrdersCache();
+          }
         }
-        const [snapshot, connectors] = await Promise.all([
-          firestore.collection('commerceOrders').orderBy('processedAt', 'desc').limit(500).get(),
-          canAccessOrders ? commerceConnectors() : Promise.resolve([]),
-        ]);
-        const items = snapshot.docs
-          .map(doc => serializeCommerceOrder(doc.id, doc.data()))
+        const now = Date.now();
+        let rawItems = commerceOrdersMemoryCache.rawItems;
+        let connectors = commerceOrdersMemoryCache.connectors;
+        if (isFresh || !rawItems || (now - commerceOrdersMemoryCache.at > 45000)) {
+          const [snapshot, freshConnectors] = await Promise.all([
+            firestore.collection('commerceOrders').orderBy('processedAt', 'desc').limit(500).get(),
+            canAccessOrders ? commerceConnectors() : Promise.resolve([]),
+          ]);
+          rawItems = snapshot.docs.map(doc => serializeCommerceOrder(doc.id, doc.data()));
+          connectors = freshConnectors;
+          commerceOrdersMemoryCache = { at: now, rawItems, connectors };
+        }
+        const items = (rawItems || [])
           .filter(item => {
             const id = String(item.id || item.canonicalOrderId || '');
             if (id.startsWith('SIM-') || id.startsWith('lead-form-lead-')) return false;
             return canSeeCommerceRecord(access, item);
           });
-        return json(response, 200, { items, summary: summarizeCommerceOrders(items), connectors, role: access.role });
+        return json(response, 200, { items, summary: summarizeCommerceOrders(items), connectors: connectors || [], role: access.role });
       }
       if (!canAccessOrders) return json(response, 403, { error: 'Orders access is required' });
       if (request.method === 'POST' && requestUrl.pathname === '/api/orders') {
@@ -9758,6 +9827,7 @@ createServer(async (request, response) => {
           createdBy:loginId, createdByName:creatorName, createdAt:now, updatedAt:now, processedAt:now, mappingVersion:'orders-manual-v1',
         };
         await firestore.collection('commerceOrders').doc(order.canonicalOrderId).set(order);
+        invalidateCommerceOrdersCache();
         upsertCustomerFromOrder(order).catch(() => null);
         await firestore.collection('system').doc('order-connector-manual').set({ source:'manual', accountId:loginId, lastSyncAt:now, imported:FieldValue.increment(1), status:'connected', updatedAt:now }, { merge:true });
         triggerAutoPushToPancake(order, loginId).catch(() => null);
@@ -9816,6 +9886,7 @@ createServer(async (request, response) => {
         }
         update.timeline = timeline;
         await ref.set(update, { merge: true });
+        invalidateCommerceOrdersCache();
         const fresh = await ref.get();
         return json(response, 200, { order: serializeCommerceOrder(fresh.id, fresh.data() || {}) });
       }
@@ -9828,6 +9899,7 @@ createServer(async (request, response) => {
         if (!snapshot || !snapshot.exists) return json(response, 404, { error: 'Không tìm thấy đơn hàng.' });
         await archiveDeletedRecord('order', snapshot.id, { id: snapshot.id, ...(snapshot.data() || {}) }, loginId);
         await ref.delete();
+        invalidateCommerceOrdersCache();
         await firestore.collection('salesLeads').doc(snapshot.id).delete().catch(() => null);
         return json(response, 200, { ok: true, deletedId: snapshot.id });
       }

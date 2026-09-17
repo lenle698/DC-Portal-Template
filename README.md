@@ -105,6 +105,22 @@ gcloud run deploy dc-portal-template \
 
 ---
 
+## ⚡ Tối Ưu Chi Phí Google Cloud (Cost Optimization Architecture)
+
+Template này đã được tích hợp sẵn giải pháp **tối ưu chi phí Google Cloud vượt trội**, giúp giảm **hơn 95% chi phí đọc Firestore** và cho phép Cloud Run tự động scale về 0 instance khi không có người dùng active:
+
+1. **In-Memory Cache thông minh (Backend `server.mjs`)**:
+   - `userAccessMemoryCache`: Cache quyền và thông tin tài khoản nhân sự (TTL 60s), tránh đọc bảng `users` lặp lại trên mọi API request.
+   - `notificationsRawDataCache`: Cache hợp nhất dữ liệu thông báo (Tasks, Invoices, Finance, Lark Sync) trong 60s, giảm hàng trăm nghìn lượt đọc Firestore mỗi ngày.
+   - `commerceOrdersMemoryCache`: Cache danh sách đơn hàng 45s (hỗ trợ query param `fresh=1` khi cần dữ liệu tức thời). Tự động **xóa cache ngay lập tức (instant invalidation)** khi có bất kỳ thao tác thay đổi nào: tạo đơn, sửa trạng thái, xoá đơn, webhook đồng bộ hoặc cập nhật hành trình vận đơn.
+2. **Visibility-Aware Polling (Frontend `DC Portal.dc.html`)**:
+   - Sử dụng Page Visibility API (`isDocVisible = () => document.visibilityState === 'visible'`).
+   - Tự động **ngắt hoàn toàn các polling timer chạy ngầm** khi tab bị ẩn hoặc người dùng chuyển ứng dụng khác.
+   - Khi người dùng click quay lại tab, portal ngay lập tức kích hoạt sự kiện `visibilitychange` để tải dữ liệu tươi mới mà không có độ trễ.
+   - Khoảng thời gian định kỳ được tinh chỉnh khoa học: Đơn hàng (45s), Thông báo (120s), Tích hợp & Ads (180s).
+
+---
+
 ## 🔑 Cấu Hình Biến Môi Trường (.env)
 
 Xem chi tiết đầy đủ trong [.env.example](.env.example) và hướng dẫn an ninh trong [SECURITY_CHECKLIST.md](SECURITY_CHECKLIST.md).

@@ -7526,8 +7526,9 @@ class Component extends DCLogic {
         if (safePage === initialPage && requestedFocus) this._focusSearchResult(requestedFocus, 0);
       })
       .catch(() => { clearTimeout(this._bootFallback); document.getElementById('portal-static-loader')?.remove(); this.setState({ appLoading:false }); });
+    const isDocVisible = () => typeof document === 'undefined' || document.visibilityState === 'visible';
     this._loadNotifications();
-    this._notificationTimer = setInterval(() => this._loadNotifications(), 60000);
+    this._notificationTimer = setInterval(() => { if (isDocVisible()) this._loadNotifications(); }, 120000);
     fetch('/api/tasks', { credentials:'same-origin' })
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data?.items) this.setState({ savedTasks: data.items }); })
@@ -7541,15 +7542,23 @@ class Component extends DCLogic {
     if (initialPage === 'customers') this._loadCustomers();
     this._loadProducts();
     this._loadSalesForms();
-    this._ordersTimer = setInterval(() => { if (this.state.page === 'orders' || this.state.page === 'salesforms') this._loadOrders(false); }, 10000);
+    this._ordersTimer = setInterval(() => { if (isDocVisible() && (this.state.page === 'orders' || this.state.page === 'salesforms')) this._loadOrders(false); }, 45000);
     this._loadIntegrations();
     this._loadAds(false);
-    this._integrationsTimer = setInterval(() => this._loadIntegrations(), 60000);
-    this._adsRefreshTimer = setInterval(() => { if(this.state.page==='ads') this._loadAds(false); }, 60000);
+    this._integrationsTimer = setInterval(() => { if (isDocVisible()) this._loadIntegrations(); }, 180000);
+    this._adsRefreshTimer = setInterval(() => { if (isDocVisible() && this.state.page === 'ads') this._loadAds(false); }, 180000);
+    this._boundVisibilityChange = () => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+        if (this.state.page === 'orders' || this.state.page === 'salesforms') this._loadOrders(false);
+        this._loadNotifications();
+      }
+    };
+    document.addEventListener('visibilitychange', this._boundVisibilityChange);
   }
 
   componentWillUnmount() {
     if (this._boundSearchKey) window.removeEventListener('keydown', this._boundSearchKey);
+    if (this._boundVisibilityChange) document.removeEventListener('visibilitychange', this._boundVisibilityChange);
     clearTimeout(this._searchDebounce); clearTimeout(this._pageLoadTimer); clearTimeout(this._languageTimer); clearTimeout(this._signatureCopyTimer); clearInterval(this._notificationTimer); clearInterval(this._ordersTimer); clearInterval(this._integrationsTimer); clearInterval(this._adsRefreshTimer);
   }
 

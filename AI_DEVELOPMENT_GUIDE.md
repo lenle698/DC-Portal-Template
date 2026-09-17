@@ -175,3 +175,17 @@ Khi viết code cho Frontend (`DC Portal.dc.html`):
 1. **Tuyệt đối không hardcode bí mật**: Mọi token hoặc URL nhạy cảm phải đọc từ `process.env`.
 2. **Bảo tồn encoding UTF-8**: Khi thao tác với file tiếng Việt, luôn dùng encoding UTF-8 không BOM.
 3. **Không import thêm thư viện npm nặng**: Hãy ưu tiên sử dụng `node:crypto`, `node:fs`, `node:http` để giữ server chạy siêu nhẹ (< 50MB RAM trên Cloud Run).
+
+---
+
+## 6. Quy Ước Tối Ưu Chi Phí Cloud (Cloud Cost Optimization)
+
+Khi phát triển thêm endpoint API hoặc UI module mới, bạn **BẮT BUỘC** tuân thủ quy tắc sau:
+
+1. **Không truy vấn Firestore trực tiếp trong các vòng lặp polling ngắn**:
+   - Nếu dữ liệu được polling thường xuyên (như orders, notifications, permissions), hãy lưu một bản sao in-memory ngắn hạn (TTL 30s - 60s) trên `server.mjs`.
+   - Cung cấp hàm xóa cache (ví dụ: `invalidateYourFeatureCache()`) và gọi hàm này ngay sau bất kỳ thao tác ghi (`POST`, `PATCH`, `DELETE` hoặc webhook ingest).
+2. **Luôn kiểm tra Page Visibility trên Frontend**:
+   - Không được tạo `setInterval` vô điều kiện. Luôn bọc callback trong `if (isDocVisible()) { ... }` để tránh gửi request khi người dùng không xem tab.
+   - Đăng ký sự kiện `visibilitychange` để fetch lại dữ liệu khi người dùng chuyển lại vào tab.
+   - Luôn giải phóng timer trong `componentWillUnmount()`.
