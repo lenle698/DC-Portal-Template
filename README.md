@@ -152,3 +152,13 @@ AI sẽ tự động tuân thủ cách khai báo component, binding state hai ch
 ## 📄 Bản Quyền & Giấy Phép
 
 Phát hành dưới giấy phép [MIT License](LICENSE). Tự do sử dụng cho mục đích cá nhân và thương mại.
+
+## AI gợi ý sản phẩm (Lore Match)
+
+Mục **AI gợi ý SP** trên sidebar dùng để cấu hình tính năng khách up ảnh giày hoặc outfit trên Shopify, Gemini Vision đọc màu rồi gợi ý mẫu áo phù hợp.
+
+- Code server: `lore-match.mjs` (route `/api/lore-match/*` cho admin, `/api/public/lore-match/*` cho website). Catalog mặc định: `lore-match-catalog.json`.
+- Trang quản trị: `lore-match-admin.html`, nhúng vào portal qua iframe. Có 5 tab: Cấu hình, Catalog mẫu, Test thử, Thống kê, Gắn lên Shopify.
+- Dữ liệu: Firestore `appConfigs/loreMatch` (cấu hình, catalog, Gemini key mã hoá AES-256-GCM bằng `INTEGRATION_CONFIG_KEY`) và `loreMatchStats/{yyyy-mm-dd}` (đếm lượt dùng).
+- Phân quyền: module `lorematch`, mặc định cấp cho Admin, Quản lý, Marketing. Vai trò tuỳ chỉnh thì bật trong Phân quyền.
+- Website gọi `POST {PORTAL_URL}/api/public/lore-match/analyze`. API chỉ nhận request từ các domain trong danh sách cho phép và giới hạn số lượt theo IP.

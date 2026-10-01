@@ -7,6 +7,7 @@ import { connect as netConnect } from 'node:net';
 import { Firestore, FieldValue } from '@google-cloud/firestore';
 import { Storage } from '@google-cloud/storage';
 import Busboy from 'busboy';
+import { handleLoreMatch } from './lore-match.mjs';
 
 const port = Number(process.env.PORT || 8080);
 const appId = process.env.LARK_APP_ID;
@@ -232,9 +233,9 @@ function requireLogin(request, response) {
 }
 
 const roleModules = {
-  Admin: ['onboarding', 'dashboard', 'analytics', 'ecom', 'orders', 'customers', 'products', 'salesforms', 'kpi', 'ads', 'marketing', 'hr', 'tasks', 'rd', 'finance', 'integrations', 'permissions', 'settings'],
-  'Quản lý': ['onboarding', 'dashboard', 'analytics', 'ecom', 'orders', 'customers', 'products', 'salesforms', 'kpi', 'ads', 'marketing', 'hr', 'tasks', 'rd', 'finance', 'integrations', 'settings'],
-  Marketing: ['onboarding', 'dashboard', 'analytics', 'customers', 'marketing', 'ads', 'salesforms', 'products', 'finance', 'settings'],
+  Admin: ['onboarding', 'dashboard', 'analytics', 'ecom', 'orders', 'customers', 'products', 'salesforms', 'lorematch', 'kpi', 'ads', 'marketing', 'hr', 'tasks', 'rd', 'finance', 'integrations', 'permissions', 'settings'],
+  'Quản lý': ['onboarding', 'dashboard', 'analytics', 'ecom', 'orders', 'customers', 'products', 'salesforms', 'lorematch', 'kpi', 'ads', 'marketing', 'hr', 'tasks', 'rd', 'finance', 'integrations', 'settings'],
+  Marketing: ['onboarding', 'dashboard', 'analytics', 'customers', 'marketing', 'ads', 'salesforms', 'lorematch', 'products', 'finance', 'settings'],
   'Nhân viên': ['onboarding', 'dashboard', 'analytics', 'customers', 'salesforms', 'products', 'finance', 'settings'],
 };
 
@@ -247,6 +248,7 @@ const searchNavigation = [
   { section: 'customers', title: 'Khách hàng', subtitle: 'Cơ sở dữ liệu khách hàng độc lập', keywords: 'customers khách hàng pancake crm lưu trữ độc lập', icon: 'group' },
   { section: 'products', title: 'Sản phẩm', subtitle: 'Danh mục, biến thể và tồn kho', keywords: 'products catalog variants sku inventory shopify sản phẩm biến thể tồn kho', icon: 'inventory_2' },
   { section: 'salesforms', title: 'Lead form', subtitle: 'Tạo form và quản lý lead theo nguồn UTM', keywords: 'sales form lead form utm landing page conversion', icon: 'dynamic_form' },
+  { section: 'lorematch', title: 'AI gợi ý sản phẩm', subtitle: 'Lore Match: khách up ảnh, Gemini gợi ý mẫu hợp giày', keywords: 'lore match ai gemini goi y san pham recommend shopify lorekicks anh giay', icon: 'auto_awesome' },
   { section: 'kpi', title: 'KPI/OKR', subtitle: 'Mục tiêu và kết quả then chốt', keywords: 'objectives key results mục tiêu', icon: 'target' },
   { section: 'ads', title: 'Quảng cáo', subtitle: 'Hiệu suất quảng cáo đa kênh', keywords: 'advertising ads performance', icon: 'ads_click' },
   { section: 'marketing', title: 'Marketing', subtitle: 'Chiến dịch và lịch nội dung', keywords: 'campaign content calendar', icon: 'campaign' },
@@ -7349,6 +7351,9 @@ createServer(async (request, response) => {
     try{return json(response,200,await syncAllEnabledMetaAds('cloud-scheduler'));}
     catch(error){console.error('Scheduled Meta Ads sync failed:',error?.message||'unknown error');return json(response,500,{error:'Scheduled Meta Ads sync failed'});}
   }
+  if (requestUrl.pathname.startsWith('/api/lore-match') || requestUrl.pathname.startsWith('/api/public/lore-match')) {
+    if (await handleLoreMatch(request, response, requestUrl, { firestore, FieldValue, json, requireLogin, userAccess, sealSecret: sealIntegrationSecret, openSecret: openIntegrationSecret })) return;
+  }
   if (requestUrl.pathname.startsWith('/api/public/')) {
     response.setHeader('Access-Control-Allow-Origin', '*');
     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -11516,6 +11521,10 @@ async function computeFinanceBalances(access, loginId) {
   if (request.method === 'GET' && requestUrl.pathname === '/organization') {
     if (!hasValidSession(request)) return redirect(response, '/login');
     return serveStatic(response, '/organization.html');
+  }
+  if (request.method === 'GET' && requestUrl.pathname === '/lore-match-admin') {
+    if (!hasValidSession(request)) return redirect(response, '/login');
+    return serveStatic(response, '/lore-match-admin.html');
   }
   if (request.method === 'GET' && requestUrl.pathname === '/sales-form-builder') {
     if (!hasValidSession(request)) return redirect(response, '/login');

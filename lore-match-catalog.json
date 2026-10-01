@@ -1,0 +1,560 @@
+{
+ "designs": [
+  {
+   "id": "ignore-the-noise",
+   "handle": "ignore-the-noise",
+   "title": "Ignore The Noise",
+   "family": "red-black",
+   "palette": [
+    "#16130F",
+    "#C9082A",
+    "#E8C9B0"
+   ],
+   "vibe": [
+    "dark",
+    "gothic",
+    "message"
+   ],
+   "pairs_with": [
+    "Jordan 1 Bred",
+    "Jordan 4 Black Cement",
+    "all-black"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "cerberus",
+   "handle": "cerberus",
+   "title": "Cerberus",
+   "family": "red-black",
+   "palette": [
+    "#16130F",
+    "#C9082A",
+    "#F1ECE0"
+   ],
+   "vibe": [
+    "aggressive",
+    "gothic",
+    "animal"
+   ],
+   "pairs_with": [
+    "Jordan 1 Chicago",
+    "Dunk Low Panda"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "fight-club",
+   "handle": "fight-club",
+   "title": "Fight Club",
+   "family": "red-cream",
+   "palette": [
+    "#C9082A",
+    "#F1ECE0",
+    "#D9A82B",
+    "#16130F"
+   ],
+   "vibe": [
+    "vintage",
+    "sport",
+    "bold"
+   ],
+   "pairs_with": [
+    "Jordan 1 Chicago",
+    "Jordan 1 Lost & Found"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "rottweiler",
+   "handle": "rottweiler",
+   "title": "Rottweiler",
+   "family": "red-black",
+   "palette": [
+    "#16130F",
+    "#B3202A",
+    "#A9C4D8"
+   ],
+   "vibe": [
+    "aggressive",
+    "animal",
+    "street"
+   ],
+   "pairs_with": [
+    "Jordan 1 Bred Toe",
+    "Jordan 11 Bred"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "skull-spider",
+   "handle": "skull-spider",
+   "title": "Skull Spider",
+   "family": "pink-black",
+   "palette": [
+    "#16130F",
+    "#E8829C",
+    "#E6DCC3"
+   ],
+   "vibe": [
+    "gothic",
+    "playful-dark"
+   ],
+   "pairs_with": [
+    "Dunk Low Valentine's Day",
+    "pink sneakers",
+    "Jordan 1 Low Pink"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "vintage-eye",
+   "handle": "vintage-eye",
+   "title": "Vintage Eye",
+   "family": "blue-cream",
+   "palette": [
+    "#F1ECE0",
+    "#3E7C99",
+    "#A3262A"
+   ],
+   "vibe": [
+    "vintage",
+    "surreal"
+   ],
+   "pairs_with": [
+    "Jordan 1 UNC",
+    "Jordan 1 Lost & Found"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "love-in-disguise",
+   "handle": "love-in-disguise",
+   "title": "Love In Disguise",
+   "family": "red-white",
+   "palette": [
+    "#FFFFFF",
+    "#C9082A",
+    "#16130F"
+   ],
+   "vibe": [
+    "playful",
+    "romantic",
+    "money"
+   ],
+   "pairs_with": [
+    "Jordan 1 Chicago",
+    "Jordan 1 Gym Red",
+    "Dunk Valentine's Day"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "ascend",
+   "handle": "ascend",
+   "title": "Ascend",
+   "family": "red-white",
+   "palette": [
+    "#C9082A",
+    "#F1ECE0",
+    "#16130F"
+   ],
+   "vibe": [
+    "angelic",
+    "money",
+    "hype"
+   ],
+   "pairs_with": [
+    "Jordan 1 Chicago",
+    "Jordan 1 Gym Red"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "get-rich",
+   "handle": "get-rich",
+   "title": "Get Rich",
+   "family": "red-black",
+   "palette": [
+    "#16130F",
+    "#C9082A",
+    "#D9A82B"
+   ],
+   "vibe": [
+    "money",
+    "hype",
+    "street"
+   ],
+   "pairs_with": [
+    "Jordan 1 Bred",
+    "Jordan 1 Gym Red"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "goated-mob",
+   "handle": "goated-mob",
+   "title": "Goated Mob",
+   "family": "blue-navy",
+   "palette": [
+    "#1E3A8A",
+    "#4F86C6",
+    "#C9082A",
+    "#FFFFFF"
+   ],
+   "vibe": [
+    "street",
+    "car-culture",
+    "grim"
+   ],
+   "pairs_with": [
+    "Jordan 1 Midnight Navy",
+    "Jordan 1 Royal"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "lore-never-dies",
+   "handle": "lore-never-dies",
+   "title": "Lore Never Dies",
+   "family": "olive-green",
+   "palette": [
+    "#6B7A3A",
+    "#B8B07A",
+    "#2E3320"
+   ],
+   "vibe": [
+    "grim",
+    "earthy",
+    "gothic"
+   ],
+   "pairs_with": [
+    "Jordan 4 Olive",
+    "Travis Scott Medium Olive",
+    "Dunk Pine Green"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "reign",
+   "handle": "reign",
+   "title": "Reign",
+   "family": "red-black",
+   "palette": [
+    "#C9082A",
+    "#16130F",
+    "#E6DCC3"
+   ],
+   "vibe": [
+    "gothic",
+    "dark",
+    "power"
+   ],
+   "pairs_with": [
+    "Jordan 1 Bred",
+    "Jordan 1 Satin Bred"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "reaper",
+   "handle": "reaper",
+   "title": "Reaper",
+   "family": "red-navy",
+   "palette": [
+    "#C9082A",
+    "#1F2D5C",
+    "#FFFFFF"
+   ],
+   "vibe": [
+    "street",
+    "grim"
+   ],
+   "pairs_with": [
+    "Jordan 1 Midnight Navy",
+    "Jordan 1 Georgetown"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "reclaim",
+   "handle": "reclaim",
+   "title": "Reclaim",
+   "family": "blue-white",
+   "palette": [
+    "#2456B5",
+    "#FFFFFF",
+    "#9CC3F0"
+   ],
+   "vibe": [
+    "angelic",
+    "bold"
+   ],
+   "pairs_with": [
+    "Jordan 1 Royal",
+    "Jordan 1 UNC",
+    "Dunk Low Hyper Cobalt"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "stay-humble",
+   "handle": "stay-humble",
+   "title": "Stay Humble",
+   "family": "black-white-red",
+   "palette": [
+    "#16130F",
+    "#FFFFFF",
+    "#C9082A",
+    "#1E3A8A"
+   ],
+   "vibe": [
+    "street",
+    "money",
+    "americana"
+   ],
+   "pairs_with": [
+    "Dunk Low Panda",
+    "Jordan 1 Chicago"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "street-print",
+   "handle": "street-print",
+   "title": "Street Print",
+   "family": "blue-white",
+   "palette": [
+    "#7FB8E8",
+    "#16130F",
+    "#FFFFFF"
+   ],
+   "vibe": [
+    "street",
+    "car-culture",
+    "west-coast"
+   ],
+   "pairs_with": [
+    "Jordan 1 UNC",
+    "Dunk Low Panda",
+    "Converse black/white"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "money-skull",
+   "handle": "money-skull",
+   "title": "Money Skull",
+   "family": "red-black",
+   "palette": [
+    "#16130F",
+    "#C9082A",
+    "#E6DCC3"
+   ],
+   "vibe": [
+    "money",
+    "gothic"
+   ],
+   "pairs_with": [
+    "Jordan 1 Bred",
+    "Jordan 11 Bred"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "pink-cherubs",
+   "handle": "pink-cherubs",
+   "title": "Pink Cherubs",
+   "family": "pink-black",
+   "palette": [
+    "#16130F",
+    "#E85A9A",
+    "#B3202A"
+   ],
+   "vibe": [
+    "romantic",
+    "gothic"
+   ],
+   "pairs_with": [
+    "Dunk Low Valentine's Day",
+    "pink sneakers"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "locked-heart",
+   "handle": "locked-heart",
+   "title": "Locked Heart",
+   "family": "red-white",
+   "palette": [
+    "#FFFFFF",
+    "#C9082A",
+    "#9A9A9A"
+   ],
+   "vibe": [
+    "romantic",
+    "gothic"
+   ],
+   "pairs_with": [
+    "Jordan 1 Chicago",
+    "Dunk Low Valentine's Day"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "stay-wild-eagle",
+   "handle": "stay-wild-eagle",
+   "title": "Stay Wild",
+   "family": "red-earth",
+   "palette": [
+    "#C9082A",
+    "#7A4A2A",
+    "#3F6B3A",
+    "#F1ECE0"
+   ],
+   "vibe": [
+    "tattoo",
+    "americana",
+    "vintage"
+   ],
+   "pairs_with": [
+    "Travis Scott Mocha",
+    "Jordan 1 Lost & Found"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "cherub-kids",
+   "handle": "cherub-kids",
+   "title": "Blessed Kids",
+   "family": "red-cream",
+   "palette": [
+    "#C9082A",
+    "#F1ECE0",
+    "#7A4A2A"
+   ],
+   "vibe": [
+    "money",
+    "angelic",
+    "family"
+   ],
+   "pairs_with": [
+    "Jordan 1 Chicago",
+    "Jordan 1 Gym Red"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "hooded-skull",
+   "handle": "hooded-skull",
+   "title": "Hooded Skull",
+   "family": "black-silver",
+   "palette": [
+    "#16130F",
+    "#B8B8B8",
+    "#C84A8A"
+   ],
+   "vibe": [
+    "dark",
+    "gothic",
+    "minimal-color"
+   ],
+   "pairs_with": [
+    "Jordan 1 Shadow",
+    "Jordan 4 Black Cement",
+    "all-black"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "lady-justice",
+   "handle": "lady-justice",
+   "title": "Lady Justice",
+   "family": "red-cream",
+   "palette": [
+    "#C9082A",
+    "#F1ECE0",
+    "#16130F"
+   ],
+   "vibe": [
+    "gothic",
+    "angelic"
+   ],
+   "pairs_with": [
+    "Jordan 1 Bred",
+    "Jordan 1 Chicago"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  },
+  {
+   "id": "unleash",
+   "handle": "unleash",
+   "title": "Unleash",
+   "family": "red-orange",
+   "palette": [
+    "#C9082A",
+    "#F26B1D",
+    "#16130F"
+   ],
+   "vibe": [
+    "aggressive",
+    "animal",
+    "fire"
+   ],
+   "pairs_with": [
+    "Jordan 4 Fire Red",
+    "Jordan 6 Infrared",
+    "Jordan 1 Bred"
+   ],
+   "active": true,
+   "boost": 0,
+   "image": ""
+  }
+ ]
+}

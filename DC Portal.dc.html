@@ -1461,6 +1461,13 @@
       </div>
       </sc-if>
 
+      <!-- AI PRODUCT MATCH (LORE MATCH) -->
+      <sc-if value="{{ p_lorematch }}" hint-placeholder-val="">
+      <div style="animation:fadeUp .3s ease;width:100%;box-sizing:border-box;height:calc(100vh - 132px);min-height:620px;display:flex">
+        <iframe src="/lore-match-admin?embed=1" title="AI gợi ý sản phẩm" style="flex:1;width:100%;height:100%;border:1px solid #E4E8F0;border-radius:14px;background:#fff"></iframe>
+      </div>
+      </sc-if>
+
       <!-- ORDERS -->
       <!-- SALES FORM BUILDER -->
       <sc-if value="{{ p_salesforms }}" hint-placeholder-val="">
@@ -7264,6 +7271,7 @@ class Component extends DCLogic {
       { id:'customers', label:en?'Customers':'Khách hàng', icon:'group', roles:['Admin','Quản lý','Nhân viên'] },
       { id:'products', label:en?'Products':'Sản phẩm', icon:'inventory_2', roles:['Admin','Quản lý','Nhân viên'] },
       { id:'salesforms', label:'Lead form', icon:'dynamic_form', roles:['Admin','Quản lý'] },
+      { id:'lorematch', label:en?'AI Product Match':'AI gợi ý SP', icon:'auto_awesome', roles:['Admin','Quản lý','Marketing'] },
       { id:'kpi', label:'KPI/OKR', icon:'target', roles:['Admin','Quản lý','Nhân viên'] },
       { id:'ads', label:en?'Ads Platforms':'Nền tảng Ads', icon:'ads_click', roles:['Admin','Quản lý','Marketing'], children:[{id:'overview',label:en?'Ads overview':'Tổng quan Ads',icon:'monitoring'},{id:'meta',label:'Facebook Ads',logo:'/assets/integrations/meta.png'},{id:'google',label:'Google Ads',logo:'/assets/integrations/google.png'},{id:'tiktok',label:'TikTok Ads',logo:'/assets/integrations/tiktok.png'},{id:'zalo',label:'Zalo Ads',logo:'/assets/integrations/zalo.png'}] },
       { id:'marketing', label:'Marketing', icon:'campaign', roles:['Admin','Quản lý','Marketing'] },
@@ -7279,7 +7287,7 @@ class Component extends DCLogic {
 
   titles() {
     if (this.state.lang === 'en') return {
-      onboarding:['Get started','Set up your workspace'],dashboard:['Overview Dashboard','A complete view of ecommerce operations'],analytics:['Analytics Hub','Deep-dive business analytics across 8 core dimensions'],ecom:['Ecom Project Management','Track project progress across marketplaces'],orders:['Orders','Unified orders from every sales channel'],customers:['Customers','Unified multi-channel customer database'],products:['Products','Catalog, variants and inventory'],salesforms:['Lead form','Create forms and manage UTM-attributed leads'],kpi:['KPI/OKR','Objectives and Key Results'],ads:['Advertising / Ads','Multi-channel advertising performance'],marketing:['Marketing','Staff performance and creatives hub'],hr:['People','Team and workforce management'],tasks:['Tasks','Assign work and track delivery'],rd:['Product R&D','Research and develop new products'],finance:['Finance Management','Staff advances, COD & marketplace reconciliation, company cash flow with SePay'],integrations:['Data Integrations','Manage data sources and synchronization'],permissions:['Permissions','Roles and system access'],settings:['Settings & Profile','Account information and preferences']
+      onboarding:['Get started','Set up your workspace'],dashboard:['Overview Dashboard','A complete view of ecommerce operations'],analytics:['Analytics Hub','Deep-dive business analytics across 8 core dimensions'],ecom:['Ecom Project Management','Track project progress across marketplaces'],orders:['Orders','Unified orders from every sales channel'],customers:['Customers','Unified multi-channel customer database'],products:['Products','Catalog, variants and inventory'],salesforms:['Lead form','Create forms and manage UTM-attributed leads'],lorematch:['AI Product Match','Lore Match: customers upload a photo, Gemini recommends matching designs'],kpi:['KPI/OKR','Objectives and Key Results'],ads:['Advertising / Ads','Multi-channel advertising performance'],marketing:['Marketing','Staff performance and creatives hub'],hr:['People','Team and workforce management'],tasks:['Tasks','Assign work and track delivery'],rd:['Product R&D','Research and develop new products'],finance:['Finance Management','Staff advances, COD & marketplace reconciliation, company cash flow with SePay'],integrations:['Data Integrations','Manage data sources and synchronization'],permissions:['Permissions','Roles and system access'],settings:['Settings & Profile','Account information and preferences']
     };
     return {
       onboarding: ['Bắt đầu', 'Thiết lập không gian làm việc của bạn'],
@@ -7290,6 +7298,7 @@ class Component extends DCLogic {
       customers: ['Khách hàng', 'Cơ sở dữ liệu khách hàng đa kênh lưu trữ độc lập'],
       products: ['Sản phẩm', 'Quản lý danh mục, biến thể, giá và tồn kho'],
       salesforms: ['Lead form', 'Tạo form và quản lý lead theo nguồn UTM'],
+      lorematch: ['AI gợi ý sản phẩm', 'Lore Match: khách up ảnh giày, Gemini gợi ý mẫu áo phù hợp'],
       kpi: ['KPI/OKR', 'Mục tiêu (Objective) và kết quả then chốt (Key Results)'],
       ads: ['Quảng cáo / Ads', 'Hiệu quả chi tiêu quảng cáo đa kênh'],
       marketing: ['Marketing', 'Hiệu suất nhân sự Marketing và Creatives Hub'],
@@ -7493,7 +7502,7 @@ class Component extends DCLogic {
   }
 
   componentDidMount() {
-    const allowedPages = new Set(['onboarding','dashboard','analytics','ecom','orders','customers','products','salesforms','kpi','ads','marketing','hr','tasks','rd','finance','integrations','permissions','settings']);
+    const allowedPages = new Set(['onboarding','dashboard','analytics','ecom','orders','customers','products','salesforms','lorematch','kpi','ads','marketing','hr','tasks','rd','finance','integrations','permissions','settings']);
     const initialParams = new URLSearchParams(location.search);
     let requestedPage = initialParams.get('section') || sessionStorage.getItem('dc_portal_page') || 'onboarding';
     if (requestedPage === 'reports') requestedPage = 'analytics';
@@ -9133,7 +9142,7 @@ class Component extends DCLogic {
       p_integrationForm:!!this.state.integrationFormOpen,integrationFormTitle:integrationEdit?'Chỉnh sửa kết nối':'Tạo kết nối mới',integrationFormFields:integrationFormFieldsData,integrationFormName:integrationDraft.name||'',integrationFormNote:integrationDraft.note||'',integrationFormMapping:integrationDraft.mappingVersion||(integrationSelected?.category==='commerce'?'orders-v1':'source-v1'),integrationFormEnabled:integrationDraft.enabled!==false,setIntegrationFormName:event=>this.setState(state=>({integrationDraft:{...(state.integrationDraft||{}),name:event.target.value}})),setIntegrationFormNote:event=>this.setState(state=>({integrationDraft:{...(state.integrationDraft||{}),note:event.target.value}})),setIntegrationFormMapping:event=>this.setState(state=>({integrationDraft:{...(state.integrationDraft||{}),mappingVersion:event.target.value}})),setIntegrationFormCadence:event=>this.setState(state=>({integrationDraft:{...(state.integrationDraft||{}),cadence:event.target.value}})),setIntegrationFormEnabled:event=>this.setState(state=>({integrationDraft:{...(state.integrationDraft||{}),enabled:event.target.checked}})),cadenceManual:integrationCadence==='manual',cadence5m:integrationCadence==='5m',cadenceHourly:integrationCadence==='hourly',cadenceDaily:integrationCadence==='daily',cadenceRealtime:integrationCadence==='realtime',p_integrationFormError:!!this.state.integrationFormError,integrationFormError:this.state.integrationFormError||'',cancelIntegrationForm:()=>this.setState({integrationFormOpen:false,integrationConnectionEdit:null,integrationDraft:null,integrationFormError:null}),saveIntegrationConnection:()=>this._saveIntegrationConnection(),integrationSaveLabel:this.state.integrationSaving?'Đang lưu...':(integrationEdit?'Lưu thay đổi':'Tạo kết nối'),integrationSaving:!!this.state.integrationSaving,p_integrationGeneratedSecret:!!this.state.integrationGeneratedSecret,integrationGeneratedSecret:this.state.integrationGeneratedSecret||'',
       p_salesFormDraftStatus:!!salesFormDraft&&salesFormDraft.status!=='published'&&salesFormDraft.canEdit!==false,publishSalesForm:()=>this._saveSalesForm('published'),copySalesFormHtml:()=>this._copySalesFormHtml(),
       salesFormCatalogRows:salesFormCatalogRowsData,p_salesFormCatalogEmpty:!salesFormCatalogRowsData.length,salesFormCatalogCount:`${salesFormCatalogRowsData.length}/${salesFormItemsData.length} form`,salesFormCatalogQuery:this.state.salesFormCatalogQuery,salesFormCreator:this.state.salesFormCreator,salesFormProductFilter:this.state.salesFormProductFilter,salesFormStatusFilter:this.state.salesFormStatusFilter,salesFormCreatorOptions:[{value:'all',label:'Tất cả người tạo'},...salesFormCreatorNames.map(value=>({value,label:value}))],salesFormCatalogProductOptions:[{value:'all',label:'Tất cả sản phẩm'},...salesFormProductNames.map(value=>({value,label:value}))],setSalesFormCatalogQuery:event=>this.setState({salesFormCatalogQuery:event.target.value}),setSalesFormCreator:event=>this.setState({salesFormCreator:event.target.value}),setSalesFormProductFilter:event=>this.setState({salesFormProductFilter:event.target.value}),setSalesFormStatusFilter:event=>this.setState({salesFormStatusFilter:event.target.value}),clearSalesFormCatalogFilters:()=>this.setState({salesFormCatalogQuery:'',salesFormCreator:'all',salesFormProductFilter:'all',salesFormStatusFilter:'all'}),
-      p_onboarding: page==='onboarding', p_dashboard: page==='dashboard', p_analytics: page==='analytics', p_ecom: page==='ecom', p_orders: page==='orders', p_customers: page==='customers', p_leads: page==='leads', p_products:page==='products', p_salesforms:page==='salesforms', p_kpi: page==='kpi',
+      p_onboarding: page==='onboarding', p_dashboard: page==='dashboard', p_analytics: page==='analytics', p_ecom: page==='ecom', p_orders: page==='orders', p_customers: page==='customers', p_leads: page==='leads', p_products:page==='products', p_salesforms:page==='salesforms', p_lorematch:page==='lorematch', p_kpi: page==='kpi',
       p_ads: page==='ads', p_marketing: page==='marketing', p_hr: page==='hr', p_tasks: page==='tasks', p_rd: page==='rd', p_tasksOrRd: page==='tasks' || page==='rd',
       p_reports: page==='reports', p_finance: page==='finance', p_integrations:page==='integrations', p_permissions: page==='permissions', p_settings: page==='settings',
       p_analyticsBod: this.state.analyticsSubTab==='bod'||!this.state.analyticsSubTab,
